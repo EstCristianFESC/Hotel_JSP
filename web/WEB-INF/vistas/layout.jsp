@@ -1,3 +1,4 @@
+<%@page import="modelo.Usuario"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@page import="jakarta.servlet.http.HttpSession"%>
 <%
@@ -9,13 +10,9 @@
 
     String pagina = request.getParameter("page");
     if (pagina == null || pagina.trim().isEmpty()) {
-        pagina = "inicio.jsp";
+        pagina = "inicio/inicio.jsp";
     } else {
         pagina = pagina.trim();
-        int lastSlash = pagina.lastIndexOf('/');
-        if (lastSlash >= 0 && lastSlash < pagina.length() - 1) {
-            pagina = pagina.substring(lastSlash + 1);
-        }
     }
 
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -110,13 +107,35 @@
 
     <!-- SIDEBAR -->
     <div class="sidebar p-3">
-        <div class="mb-4">
-            <h4 class="text-white"><i class="bi bi-building me-2"></i>HotelSys</h4>
+        <div class="mb-4 text-center">
+            <h4 class="text-white m-0">
+                <i class="bi bi-building me-2"></i>HotelSys
+            </h4>
         </div>
-        <nav class="nav flex-column">
-            <a href="${pageContext.request.contextPath}/LoginController?page=inicio.jsp"
-               class="nav-link <%= "inicio.jsp".equals(pagina) ? "active" : "" %>"><i class="bi bi-house-door"></i> Inicio</a>
+        
+        <%
+            Usuario usuarioLog = (Usuario) session.getAttribute("usuarioLogueado");
+        %>
 
+        <div class="d-flex align-items-center gap-2 mb-4 p-2 rounded"
+             style="background:#1e293b; border:1px solid rgba(255,255,255,0.1);">
+
+            <i class="bi bi-person-circle text-white" style="font-size:22px;"></i>
+
+            <div class="text-white" style="line-height:1;">
+                <span style="font-size:14px; font-weight:600;">
+                    <%= usuarioLog.getNombre() %>
+                </span><br>
+                <small class="text-secondary">Usuario activo</small>
+            </div>
+        </div>
+        <!-- INICIO -->
+            <a href="${pageContext.request.contextPath}/LoginController?page=inicio/inicio.jsp"
+               class="nav-link <%= "inicio/inicio.jsp".equals(pagina) ? "active" : "" %>">
+               <i class="bi bi-house-door"></i> Inicio
+            </a>
+
+            <!-- CLIENTES -->
             <a class="nav-link d-flex justify-content-between align-items-center"
                data-bs-toggle="collapse" href="#submenuClientes" role="button"
                aria-expanded="<%= pagina.startsWith("clientes") ? "true" : "false" %>">
@@ -124,37 +143,57 @@
                <i class="bi bi-chevron-down small"></i>
             </a>
             <div class="collapse <%= pagina.startsWith("clientes") ? "show" : "" %>" id="submenuClientes">
-                <a href="${pageContext.request.contextPath}/LoginController?page=clientesRegistrar.jsp"
-                   class="nav-link ms-4 <%= "clientesRegistrar.jsp".equals(pagina) ? "active" : "" %>"><i class="bi bi-person-plus"></i> Registrar</a>
-                <a href="${pageContext.request.contextPath}/LoginController?page=clientesConsultar.jsp"
-                   class="nav-link ms-4 <%= "clientesConsultar.jsp".equals(pagina) ? "active" : "" %>"><i class="bi bi-search"></i> Consultar</a>
+
+                <a href="${pageContext.request.contextPath}/LoginController?page=clientes/clientesRegistrar.jsp"
+                   class="nav-link ms-4 <%= "clientes/clientesRegistrar.jsp".equals(pagina) ? "active" : "" %>">
+                   <i class="bi bi-person-plus"></i> Registrar
+                </a>
+
+                <a href="${pageContext.request.contextPath}/LoginController?page=clientes/clientesConsultar.jsp"
+                   class="nav-link ms-4 <%= "clientes/clientesConsultar.jsp".equals(pagina) ? "active" : "" %>">
+                   <i class="bi bi-search"></i> Consultar
+                </a>
+
             </div>
 
+            <!-- HABITACIONES -->
             <a class="nav-link d-flex justify-content-between align-items-center"
-                data-bs-toggle="collapse" href="#submenuHabitaciones" role="button"
-                aria-expanded="<%= pagina.startsWith("habitaciones") ? "true" : "false" %>">
-                <span><i class="bi bi-door-closed"></i> Habitaciones</span>
-                <i class="bi bi-chevron-down small"></i>
-             </a>
-             <div class="collapse <%= pagina.startsWith("habitaciones") ? "show" : "" %>" id="submenuHabitaciones">
-                 <a href="${pageContext.request.contextPath}/LoginController?page=habitacionesRegistrar.jsp"
-                    class="nav-link ms-4 <%= "habitacionesRegistrar.jsp".equals(pagina) ? "active" : "" %>"><i class="bi bi-plus-square"></i> Registrar</a>
-                 <a href="${pageContext.request.contextPath}/LoginController?page=habitacionesConsultar.jsp"
-                    class="nav-link ms-4 <%= "habitacionesConsultar.jsp".equals(pagina) ? "active" : "" %>"><i class="bi bi-search"></i> Consultar</a>
-             </div>
+               data-bs-toggle="collapse" href="#submenuHabitaciones" role="button"
+               aria-expanded="<%= pagina.startsWith("habitaciones") ? "true" : "false" %>">
+               <span><i class="bi bi-door-closed"></i> Habitaciones</span>
+               <i class="bi bi-chevron-down small"></i>
+            </a>
+            <div class="collapse <%= pagina.startsWith("habitaciones") ? "show" : "" %>" id="submenuHabitaciones">
 
-            <a href="${pageContext.request.contextPath}/LoginController?page=reservas.jsp"
-               class="nav-link <%= "reservas.jsp".equals(pagina) ? "active" : "" %>"><i class="bi bi-calendar-check"></i> Reservas</a>
+                <a href="${pageContext.request.contextPath}/LoginController?page=habitaciones/habitacionesRegistrar.jsp"
+                   class="nav-link ms-4 <%= "habitaciones/habitacionesRegistrar.jsp".equals(pagina) ? "active" : "" %>">
+                   <i class="bi bi-plus-square"></i> Registrar
+                </a>
 
-            <a href="${pageContext.request.contextPath}/LoginController?page=restaurante.jsp"
-               class="nav-link <%= "restaurante.jsp".equals(pagina) ? "active" : "" %>"><i class="bi bi-egg-fried"></i> Restaurante</a>
+                <a href="${pageContext.request.contextPath}/LoginController?page=habitaciones/habitacionesConsultar.jsp"
+                   class="nav-link ms-4 <%= "habitaciones/habitacionesConsultar.jsp".equals(pagina) ? "active" : "" %>">
+                   <i class="bi bi-search"></i> Consultar
+                </a>
 
-            <a href="${pageContext.request.contextPath}/LoginController?page=configuracion.jsp"
-               class="nav-link <%= "configuracion.jsp".equals(pagina) ? "active" : "" %>"><i class="bi bi-gear"></i> Configuración</a>
+            </div>
 
-            <hr>
-            <a href="${pageContext.request.contextPath}/LogoutController" class="nav-link text-danger fw-semibold"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
-        </nav>
+            <!-- RESERVAS -->
+            <a href="${pageContext.request.contextPath}/LoginController?page=reservas/reservas.jsp"
+               class="nav-link <%= "reservas/reservas.jsp".equals(pagina) ? "active" : "" %>">
+               <i class="bi bi-calendar-check"></i> Reservas
+            </a>
+
+            <!-- PRODUCTOS -->
+            <a href="${pageContext.request.contextPath}/LoginController?page=productos/productos.jsp"
+               class="nav-link <%= "productos/productos.jsp".equals(pagina) ? "active" : "" %>">
+               <i class="bi bi-basket"></i> Productos
+            </a>
+
+            <!-- CONFIGURACIÓN -->
+            <a href="${pageContext.request.contextPath}/LoginController?page=usuario/configuracion.jsp"
+               class="nav-link <%= "usuario/configuracion.jsp".equals(pagina) ? "active" : "" %>">
+               <i class="bi bi-gear"></i> Configuración
+            </a>
     </div>
 
     <main class="fade-in">
@@ -168,7 +207,7 @@
             else if (pagina.contains("habitacionesConsultar")) titulo += "Consultar Habitaciones";
             else if (pagina.contains("habitaciones")) titulo += "Habitaciones";
             else if (pagina.contains("reservas")) titulo += "Reservas";
-            else if (pagina.contains("restaurante")) titulo += "Restaurante";
+            else if (pagina.contains("productos")) titulo += "Productos";
             else if (pagina.contains("configuracion")) titulo += "Configuración";
             else titulo += "Panel Principal";
         %>

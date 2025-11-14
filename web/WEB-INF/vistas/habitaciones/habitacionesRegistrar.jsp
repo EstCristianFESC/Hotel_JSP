@@ -63,13 +63,16 @@
             </div>
 
             <div class="col-md-4">
-                <label class="form-label fw-semibold">Disponibilidad</label>
-                <div class="input-group">
+                <label class="form-label fw-semibold">Estado</label>
+                <div class="input-group align-items-center">
                     <span class="input-group-text"><i class="bi bi-door-open"></i></span>
-                    <div class="form-check form-switch d-flex align-items-center ms-2">
-                        <input class="form-check-input" type="checkbox" id="disponible" name="disponible"
-                            <%= (request.getAttribute("habitacion") != null && ((Habitacion)request.getAttribute("habitacion")).isDisponible()) ? "checked" : "checked" %>>
-                        <label class="form-check-label ms-2" for="disponible">Disponible</label>
+                    <input type="text" id="estadoHabitacion" class="form-control text-center" readonly
+                           value="<%= (habitacion != null && habitacion.isDisponible()) ? "Disponible" : "Ocupada" %>">
+                    <div class="input-group-text">
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input" type="checkbox" id="checkDisponible"
+                                   <%= (habitacion != null && habitacion.isDisponible()) ? "checked" : "" %>>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -112,5 +115,12 @@
                 }, 500); // espera a que termine la animación
             }, 3000); // 3 segundos antes de desaparecer
         }
+    });
+    
+    const check = document.getElementById("checkDisponible");
+    const estado = document.getElementById("estadoHabitacion");
+
+    check.addEventListener("change", () => {
+        estado.value = check.checked ? "Disponible" : "Ocupada";
     });
 </script>

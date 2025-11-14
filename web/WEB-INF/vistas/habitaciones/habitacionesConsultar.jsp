@@ -83,8 +83,7 @@
                                     </td>
                                     <td class="text-center">
                                         <a href="HabitacionController?accion=editar&numero=<%= h.getNumero() %>" class="btn btn-sm btn-warning">
-                                            <i class="bi bi-pencil-square"></i> Editar
-                                        </a>
+                                            <i class="bi bi-pencil-square"></i></a>
                                     </td>
                                 </tr>
                             <%

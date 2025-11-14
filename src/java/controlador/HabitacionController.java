@@ -20,7 +20,7 @@ public class HabitacionController extends HttpServlet {
             throws ServletException, IOException {
 
         String accion = request.getParameter("accion");
-        String url = "/WEB-INF/vistas/layout.jsp?page=habitacionesConsultar.jsp";
+        String url = "/WEB-INF/vistas/layout.jsp?page=habitaciones/habitacionesConsultar.jsp";
 
         try {
             if ("editar".equals(accion)) {
@@ -28,7 +28,7 @@ public class HabitacionController extends HttpServlet {
                 Habitacion h = dao.buscarPorNumero(numeroStr != null ? Integer.parseInt(numeroStr) : -1);
                 if (h != null) {
                     request.setAttribute("habitacion", h);
-                    url = "/WEB-INF/vistas/layout.jsp?page=habitacionesEditar.jsp";
+                    url = "/WEB-INF/vistas/layout.jsp?page=habitaciones/habitacionesEditar.jsp";
                 } else {
                     request.setAttribute("mensaje", "Habitación no encontrada para edición.");
                     request.setAttribute("tipoMensaje", "alert-danger");
@@ -79,7 +79,7 @@ public class HabitacionController extends HttpServlet {
             throws ServletException, IOException {
 
         String accion = request.getParameter("accion");
-        String url = "/WEB-INF/vistas/layout.jsp?page=habitacionesRegistrar.jsp";
+        String url = "/WEB-INF/vistas/layout.jsp?page=habitaciones/habitacionesRegistrar.jsp";
 
         try {
             switch (accion) {
@@ -87,7 +87,7 @@ public class HabitacionController extends HttpServlet {
                     Habitacion h = construirHabitacion(request);
                     boolean ok = dao.guardar(h);
                     request.setAttribute("mensaje", ok ? "Habitación registrada correctamente." 
-                                                      : "❌ Error al registrar habitación.");
+                                                      : "Error al registrar habitación.");
                     request.setAttribute("tipoMensaje", ok ? "alert-success" : "alert-danger");
                     break;
 
@@ -95,13 +95,13 @@ public class HabitacionController extends HttpServlet {
                     Habitacion h2 = construirHabitacion(request);
                     boolean exito = dao.editar(h2); // deberías agregar método editar en DAO
                     request.setAttribute("mensaje", exito ? "Habitación actualizada correctamente."
-                                                          : "❌ No se pudo actualizar.");
+                                                          : "No se pudo actualizar.");
                     request.setAttribute("tipoMensaje", exito ? "alert-warning" : "alert-danger");
-                    url = "/WEB-INF/vistas/layout.jsp?page=habitacionesConsultar.jsp";
+                    url = "/WEB-INF/vistas/layout.jsp?page=habitaciones/habitacionesConsultar.jsp";
                     break;
 
                 case "buscar":
-                    url = "/WEB-INF/vistas/layout.jsp?page=habitacionesConsultar.jsp";
+                    url = "/WEB-INF/vistas/layout.jsp?page=habitaciones/habitacionesConsultar.jsp";
                     doGet(request, response); // reutiliza lógica de GET para búsqueda
                     return;
 

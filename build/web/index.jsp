@@ -151,52 +151,54 @@
             <h3>HotelSys</h3>
             <p class="mb-4 text-muted">Accede a tu panel de administración</p>
 
-            <% String error=(String) request.getAttribute("error"); %>
-                <% if (error !=null) { %>
-                    <div class="alert alert-danger text-center py-2">
-                        <%= error %>
-                    </div>
-                    <% } %>
+            <% String error = (String) request.getAttribute("error"); %>
+            <% if (error != null) { %>
+                <div class="alert alert-danger text-center py-2">
+                    <%= error %>
+                </div>
+            <% } %>
 
-                        <form action="LoginController" method="post">
-                            <div class="mb-3 text-start">
-                                <label for="usuario" class="form-label">Usuario</label>
-                                <input type="text" id="usuario" name="usuario" class="form-control"
-                                    placeholder="Ingresa tu usuario" required>
-                            </div>
+            <form action="LoginController" method="post">
+                <div class="mb-3 text-start input-group">
+                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                    <input type="text" id="usuario" name="usuario" class="form-control"
+                           placeholder="Ingresa tu usuario" required>
+                </div>
 
-                            <div class="mb-4 text-start password-wrapper">
-                                <label for="password" class="form-label">Contraseña</label>
-                                <input type="password" id="password" name="password" class="form-control"
-                                    placeholder="Ingresa tu Contraseña" required>
-                                <i class="bi bi-eye" id="togglePassword"></i>
-                            </div>
+                <div class="mb-4 text-start input-group">
+                    <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                    <input type="password" id="password" name="password" class="form-control"
+                           placeholder="Ingresa tu contraseña" required>
+                    <span class="input-group-text" style="cursor:pointer;" onclick="togglePassword('password')">
+                        <i class="bi bi-eye" id="icon-password"></i>
+                    </span>
+                </div>
 
+                <button type="submit" class="btn btn-login w-100 py-2">Iniciar sesión</button>
+            </form>
 
-                            <button type="submit" class="btn btn-login w-100 py-2">Iniciar
-                                sesión</button>
-                        </form>
-
-                        <div class="login-footer mt-4">
-                            <small>© <%= java.time.Year.now() %> HotelSys · Todos los
-                                    derechos reservados</small>
-                        </div>
+            <div class="login-footer mt-4">
+                <small>© <%= java.time.Year.now() %> HotelSys · Todos los derechos reservados</small>
+            </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
         <script>
-            const togglePassword = document.getElementById('togglePassword');
-            const password = document.getElementById('password');
+            function togglePassword(inputId) {
+                const input = document.getElementById(inputId);
+                const icon = document.getElementById("icon-" + inputId);
 
-            togglePassword.addEventListener('click', () => {
-                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-                password.setAttribute('type', type);
-                togglePassword.classList.toggle('bi-eye');
-                togglePassword.classList.toggle('bi-eye-slash');
-            });
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            }
         </script>
-
     </body>
-
 </html>

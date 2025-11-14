@@ -47,10 +47,10 @@
                             <th>ID / NIT</th>
                             <th>Tipo</th>
                             <th>Nombre / Razón Social</th>
-                            <th>Apellido / Representante</th>
+                            <th>Apellido</th>
                             <th>Teléfono</th>
                             <th>Dirección</th>
-                            <th>Email</th>
+                            <th>Correo</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -77,8 +77,7 @@
                                 <td class="text-center">
                                     <a href="ClienteController?accion=editar&id=<%= cli.getId() %>" 
                                        class="btn btn-sm btn-warning">
-                                        <i class="bi bi-pencil-square"></i> Editar
-                                    </a>
+                                        <i class="bi bi-pencil-square"></i></a>
                                 </td>
                             </tr>
                         <%

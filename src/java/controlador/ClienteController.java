@@ -19,7 +19,7 @@ public class ClienteController extends HttpServlet {
             throws ServletException, IOException {
 
         String accion = request.getParameter("accion");
-        String url = "/WEB-INF/vistas/layout.jsp?page=clientesConsultar.jsp";
+        String url = "/WEB-INF/vistas/layout.jsp?page=clientes/clientesConsultar.jsp";
 
         try {
             if ("editar".equals(accion)) {
@@ -27,7 +27,7 @@ public class ClienteController extends HttpServlet {
                 Cliente cli = clienteDAO.buscarPorId(id);
                 if (cli != null) {
                     request.setAttribute("cliente", cli);
-                    url = "/WEB-INF/vistas/layout.jsp?page=clientesEditar.jsp";
+                    url = "/WEB-INF/vistas/layout.jsp?page=clientes/clientesEditar.jsp";
                 } else {
                     request.setAttribute("mensaje", "Cliente no encontrado para edición.");
                     request.setAttribute("tipoMensaje", "alert-danger");
@@ -52,7 +52,7 @@ public class ClienteController extends HttpServlet {
             throws ServletException, IOException {
 
         String accion = request.getParameter("accion");
-        String url = "/WEB-INF/vistas/layout.jsp?page=clientesRegistrar.jsp";
+        String url = "/WEB-INF/vistas/layout.jsp?page=clientes/clientesRegistrar.jsp";
 
         try {
             switch (accion) {
@@ -66,7 +66,7 @@ public class ClienteController extends HttpServlet {
                     actualizarCliente(request);
                     request.setAttribute("mensaje", "Datos del cliente actualizados con éxito.");
                     request.setAttribute("tipoMensaje", "alert-warning");
-                    url = "/WEB-INF/vistas/layout.jsp?page=clientesConsultar.jsp";
+                    url = "/WEB-INF/vistas/layout.jsp?page=clientes/clientesConsultar.jsp";
                     break;
 
                 case "buscar":
@@ -87,7 +87,7 @@ public class ClienteController extends HttpServlet {
                         request.setAttribute("mensaje", "No se encontraron clientes con ese criterio.");
                         request.setAttribute("tipoMensaje", "alert-danger");
                     }
-                    url = "/WEB-INF/vistas/layout.jsp?page=clientesConsultar.jsp";
+                    url = "/WEB-INF/vistas/layout.jsp?page=clientes/clientesConsultar.jsp";
                     break;
 
                 default:
@@ -100,8 +100,8 @@ public class ClienteController extends HttpServlet {
             request.setAttribute("mensaje", "Ocurrió un error: " + e.getMessage());
             request.setAttribute("tipoMensaje", "alert-danger");
             url = "buscar".equals(accion)
-                    ? "/WEB-INF/vistas/layout.jsp?page=clientesConsultar.jsp"
-                    : "/WEB-INF/vistas/layout.jsp?page=clientesRegistrar.jsp";
+                    ? "/WEB-INF/vistas/layout.jsp?page=clientes/clientesConsultar.jsp"
+                    : "/WEB-INF/vistas/layout.jsp?page=clientes/clientesRegistrar.jsp";
         }
 
         request.getRequestDispatcher(url).forward(request, response);
