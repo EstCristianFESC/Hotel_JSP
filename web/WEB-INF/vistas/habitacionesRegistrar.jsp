@@ -47,7 +47,7 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-cash-stack"></i></span>
                     <input type="text" inputmode="numeric" pattern="[0-9\.]*" class="form-control"
-                           id="precioPorNoche" name="precioPorNoche" placeholder="Ej: 120000" required>
+                           id="precioPorNoche" name="precioPorNoche" placeholder="Ej: 120.000" required>
                 </div>
             </div>
         </div>
