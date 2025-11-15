@@ -106,4 +106,37 @@ public class ProductosDAO {
         }
         return false;
     }
+    
+    public List<Productos> filtrar(String idStr, String descripcion) {
+        List<Productos> lista = new ArrayList<>();
+
+        String sql = "SELECT * FROM restaurante_producto WHERE estado = 1";
+
+        if (idStr != null && !idStr.isEmpty()) {
+            sql += " AND id = " + idStr;
+        }
+        if (descripcion != null && !descripcion.trim().isEmpty()) {
+            sql += " AND descripcion LIKE '%" + descripcion.trim() + "%'";
+        }
+
+        try {
+            con = Conexion.getConexion();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                lista.add(new Productos(
+                        rs.getInt("id"),
+                        rs.getString("descripcion"),
+                        rs.getLong("valor_unitario"),
+                        rs.getInt("estado")
+                ));
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error filtrar productos: " + e);
+        }
+
+        return lista;
+    }
 }

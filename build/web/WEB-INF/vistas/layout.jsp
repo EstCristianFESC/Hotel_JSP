@@ -194,12 +194,21 @@
                class="nav-link <%= "usuario/configuracion.jsp".equals(pagina) ? "active" : "" %>">
                <i class="bi bi-gear"></i> Configuración
             </a>
+            
+            <hr>
+            <hr style="border-color: #fff; margin: 1rem 0;">
+               
+            <!-- BOTÓN CERRAR SESIÓN DESTACADO -->
+            <a href="${pageContext.request.contextPath}/LogoutController"
+               class="nav-link mt-auto mb-3 text-white d-flex align-items-center justify-content-center"
+               style="background-color: #dc3545; border-radius: 8px; padding: 10px;">
+                <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+            </a>
     </div>
 
     <main class="fade-in">
         <%
             String titulo = "HotelSys - ";
-            // Asignar título según la página
             if (pagina.contains("inicio")) titulo += "Inicio";
             else if (pagina.contains("clientesRegistrar")) titulo += "Registrar Cliente";
             else if (pagina.contains("clientesConsultar")) titulo += "Consultar Clientes";
@@ -208,6 +217,8 @@
             else if (pagina.contains("habitaciones")) titulo += "Habitaciones";
             else if (pagina.contains("reservas")) titulo += "Reservas";
             else if (pagina.contains("productos")) titulo += "Productos";
+            else if (pagina.contains("productosCrear")) titulo += "Crear Productos";
+            else if (pagina.contains("productosEditar")) titulo += "Editar Productos";
             else if (pagina.contains("configuracion")) titulo += "Configuración";
             else titulo += "Panel Principal";
         %>

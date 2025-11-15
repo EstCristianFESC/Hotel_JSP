@@ -21,7 +21,7 @@
 
                 <div class="col-md-4">
                     <label class="form-label fw-semibold">Valor Unitario:</label>
-                    <input type="number" name="valor" min="0" class="form-control"
+                    <input type="number" name="valor" min="0" class="form-control" id="valorInput"
                            placeholder="Ej: 8500" required>
                 </div>
 
@@ -31,7 +31,7 @@
                         <i class="bi bi-check2-circle me-1"></i>Guardar
                     </button>
 
-                    <a href="${pageContext.request.contextPath}/ProductosController?accion=listar"
+                    <a href="${pageContext.request.contextPath}/LoginController?page=productos/productos.jsp"
                        class="btn btn-secondary px-4 py-2">
                         <i class="bi bi-arrow-left me-1"></i>Volver
                     </a>
@@ -39,5 +39,27 @@
             </form>
         </div>
     </div>
-
 </div>
+                       
+<script>
+    const valorInput = document.getElementById('valorInput');
+
+    valorInput.addEventListener('input', (e) => {
+        // Guardamos el valor real en un atributo
+        const rawValue = e.target.value.replace(/\./g, '');
+        e.target.dataset.rawValue = rawValue;
+
+        // Formateamos para mostrar miles
+        if (rawValue) {
+            const formatted = Number(rawValue).toLocaleString('de-DE'); // miles con puntos
+            e.target.value = formatted;
+        }
+    });
+
+    // Al enviar el formulario, restauramos el valor original
+    valorInput.closest('form')?.addEventListener('submit', () => {
+        if (valorInput.dataset.rawValue) {
+            valorInput.value = valorInput.dataset.rawValue;
+        }
+    });
+</script>

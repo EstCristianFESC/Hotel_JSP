@@ -19,15 +19,9 @@
 
             <!-- Filtros -->
             <form action="${pageContext.request.contextPath}/ProductosController"
-                  method="get" class="row g-3 mb-4">
+                  method="get" class="row g-3 mb-4 align-items-end">
 
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">ID Producto:</label>
-                    <input type="number" class="form-control" name="id"
-                           value="<%= request.getParameter("id") != null ? request.getParameter("id") : "" %>"
-                           placeholder="Ej: 10">
-                </div>
-
+                <!-- Campo de búsqueda -->
                 <div class="col-md-5">
                     <label class="form-label fw-semibold">Descripción:</label>
                     <input type="text" class="form-control" name="descripcion"
@@ -35,10 +29,20 @@
                            placeholder="Ej: Gaseosa, Hamburguesa">
                 </div>
 
-                <div class="col-12 d-flex align-items-end gap-2">
+                <!-- Botón Agregar -->
+                <div class="col-md-4 d-flex">
+                    <a href="${pageContext.request.contextPath}/ProductosController?accion=crear"
+                       class="btn btn-sm btn-success px-3 py-2 ms-auto">
+                        <i class="bi bi-plus-circle me-1"></i>Nuevo Producto
+                    </a>
+                </div>
+
+                <!-- Línea completa para Buscar y Limpiar -->
+                <div class="col-12 d-flex align-items-end gap-2 mt-2">
 
                     <!-- Botón Buscar -->
-                    <button type="submit" name="accion" value="consultar" class="btn btn-sm btn-info text-white px-3 py-2">
+                    <button type="submit" name="accion" value="consultar"
+                            class="btn btn-sm btn-info text-white px-3 py-2">
                         <i class="bi bi-search me-1"></i>Buscar
                     </button>
 
@@ -47,11 +51,6 @@
                         <i class="bi bi-eraser me-1"></i>Limpiar
                     </button>
 
-                    <!-- Botón Agregar -->
-                    <a href="${pageContext.request.contextPath}/LoginController?page=productos/productosCrear.jsp"
-                       class="btn btn-sm btn-success px-3 py-2 ms-auto">
-                        <i class="bi bi-plus-circle me-1"></i>Nuevo Producto
-                    </a>
                 </div>
             </form>
 
@@ -62,7 +61,6 @@
                 <table class="table table-striped table-hover align-middle">
                     <thead class="table-dark">
                         <tr>
-                            <th>ID</th>
                             <th>Descripción</th>
                             <th>Valor Unitario</th>
                             <th class="text-center">Acciones</th>
@@ -71,7 +69,7 @@
 
                     <tbody>
                     <%
-                        List<Productos> lista = (List<Productos>) request.getAttribute("productos");
+                        List<Productos> lista = (List<Productos>) request.getAttribute("listaProductos");
                         if (lista == null) lista = new ArrayList<>();
 
                         if (lista.isEmpty()) {
@@ -84,14 +82,12 @@
                             String valorFormateado = String.format("%,d", (long)p.getValorUnitario()).replace(",", ".");
                     %>
                         <tr>
-                            <td><%= p.getId() %></td>
                             <td><%= p.getDescripcion() %></td>
                             <td>$ <%= valorFormateado %></td>
                             <td class="text-center">
-                                <a href="RestauranteProductoController?accion=editar&id=<%= p.getId() %>"
+                                <a href="${pageContext.request.contextPath}/ProductosController?accion=editar&id=<%= p.getId() %>"
                                    class="btn btn-sm btn-warning">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
+                                   <i class="bi bi-pencil-square"></i> </a>
                             </td>
                         </tr>
                     <% } } %>
@@ -105,7 +101,6 @@
 
 <script>
     function limpiarFiltros() {
-        document.querySelector("input[name=id]").value = "";
         document.querySelector("input[name=descripcion]").value = "";
         document.getElementById("mensajeProducto").style.display = "none";
 

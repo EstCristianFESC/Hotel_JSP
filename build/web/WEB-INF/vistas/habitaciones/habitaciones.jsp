@@ -93,9 +93,9 @@
 						<script>
 							document.addEventListener("DOMContentLoaded", () => {
 								document.getElementById("numero").value = "<%= h.getNumero() %>";
-								document.getElementById("precio").value = "<%= h.getPrecio() %>";
+								document.getElementById("precio").value = "<%= h.getPrecioPorNoche() %>";
 								document.getElementById("descripcion").value = "<%= h.getDescripcion() %>";
-								document.getElementById("estado").value = "<%= h.isEstado() ? "Disponible" : "Ocupada" %>";
+								document.getElementById("estado").value = "<%= h.isDisponible() ? "Disponible" : "Ocupada" %>";
 								// Cambiar automáticamente a la pestaña “Registrar”
 								const registrarTab = new bootstrap.Tab(document.getElementById('registrar-tab'));
 								registrarTab.show();
@@ -158,11 +158,11 @@
 								%>
 								<tr style="cursor:pointer" onclick="seleccionarHabitacion('<%= hab.getNumero() %>')">
 									<td><%= hab.getNumero() %></td>
-									<td>$<%= String.format("%,d", hab.getPrecio()) %></td>
+									<td>$<%= String.format("%,d", hab.getPrecioPorNoche()) %></td>
 									<td><%= hab.getDescripcion() %></td>
 									<td>
-										<span class="badge <%= hab.isEstado() ? "bg-success" : "bg-danger" %>">
-											<%= hab.isEstado() ? "Disponible" : "Ocupada" %>
+										<span class="badge <%= hab.isDisponible() ? "bg-success" : "bg-danger" %>">
+											<%= hab.isDisponible() ? "Disponible" : "Ocupada" %>
 										</span>
 									</td>
 								</tr>
