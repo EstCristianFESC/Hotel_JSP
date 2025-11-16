@@ -1,6 +1,7 @@
 package controlador;
 
 import dao.ClienteDAO;
+import dao.HabitacionDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -35,6 +36,22 @@ public class ClienteController extends HttpServlet {
             } else if ("listar".equals(accion)) {
                 List<Cliente> lista = clienteDAO.buscarPorCriterio("");
                 request.setAttribute("listaClientes", lista);
+            } else if ("buscarPorCedula".equals(accion)) {
+                String cedula = request.getParameter("cedula");
+                Cliente cli = null;
+                if (cedula != null && !cedula.isBlank()) {
+                    cli = clienteDAO.buscarPorId(cedula.trim());
+                }
+                request.setAttribute("clienteReserva", cli);
+
+                try {
+                    request.getRequestDispatcher("/WEB-INF/vistas/layout.jsp?page=reserva/reservaRegistrar.jsp")
+                           .forward(request, response);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error cargando la reserva");
+                }
+                return;
             }
 
         } catch (Exception e) {

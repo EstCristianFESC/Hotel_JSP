@@ -1,5 +1,6 @@
 package modelo;
-    public class Habitacion {
+
+public class Habitacion {
     private int numero;
     private String tipo;
     private String descripcion;

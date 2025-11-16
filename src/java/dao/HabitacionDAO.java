@@ -125,4 +125,8 @@ public class HabitacionDAO {
 
         return lista;
     }
+
+    public Object listarDisponibles() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

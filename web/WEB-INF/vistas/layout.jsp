@@ -178,8 +178,8 @@
             </div>
 
             <!-- RESERVAS -->
-            <a href="${pageContext.request.contextPath}/LoginController?page=reservas/reservas.jsp"
-               class="nav-link <%= "reservas/reservas.jsp".equals(pagina) ? "active" : "" %>">
+            <a href="${pageContext.request.contextPath}/LoginController?page=reservas/reservaRegistrar.jsp"
+               class="nav-link <%= "reservas/reservaRegistrar.jsp".equals(pagina) ? "active" : "" %>">
                <i class="bi bi-calendar-check"></i> Reservas
             </a>
 
@@ -188,15 +188,14 @@
                class="nav-link <%= "productos/productos.jsp".equals(pagina) ? "active" : "" %>">
                <i class="bi bi-basket"></i> Productos
             </a>
-
+            
+            <hr>
             <!-- CONFIGURACIÓN -->
             <a href="${pageContext.request.contextPath}/LoginController?page=usuario/configuracion.jsp"
                class="nav-link <%= "usuario/configuracion.jsp".equals(pagina) ? "active" : "" %>">
                <i class="bi bi-gear"></i> Configuración
             </a>
-            
             <hr>
-            <hr style="border-color: #fff; margin: 1rem 0;">
                
             <!-- BOTÓN CERRAR SESIÓN DESTACADO -->
             <a href="${pageContext.request.contextPath}/LogoutController"

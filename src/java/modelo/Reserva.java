@@ -1,19 +1,35 @@
 package modelo;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Reserva {
-	private String codigo;
-	private Cliente cliente;
-	private Habitacion habitacion;
-	private LocalDate fechaIngreso;
-	private LocalDate fechaSalida;
-	private boolean checkIn;
-	private boolean checkOut;
-	private long subtotal;
-	private long iva;
-	private long total;
+    private int id;
+    private String clienteId;
+    private int habitacionNumero;
+    private LocalDate fechaEntrada;
+    private LocalDate fechaSalida;
+    private String estado; // RESERVADA, ACTIVA, FINALIZADA
+    private double total;
+
+    // Getters y Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getClienteId() { return clienteId; }
+    public void setClienteId(String clienteId) { this.clienteId = clienteId; }
+
+    public int getHabitacionNumero() { return habitacionNumero; }
+    public void setHabitacionNumero(int habitacionNumero) { this.habitacionNumero = habitacionNumero; }
+
+    public LocalDate getFechaEntrada() { return fechaEntrada; }
+    public void setFechaEntrada(LocalDate fechaEntrada) { this.fechaEntrada = fechaEntrada; }
+
+    public LocalDate getFechaSalida() { return fechaSalida; }
+    public void setFechaSalida(LocalDate fechaSalida) { this.fechaSalida = fechaSalida; }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+
+    public double getTotal() { return total; }
+    public void setTotal(double total) { this.total = total; }
 }

@@ -119,4 +119,8 @@ public class ClienteDAO {
 
         return c;
     }
+
+    public Object listar() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
