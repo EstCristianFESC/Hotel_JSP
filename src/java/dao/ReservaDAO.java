@@ -1,98 +1,138 @@
 package dao;
 
-import modelo.Reserva;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import modelo.Reserva;
 
 public class ReservaDAO {
-
-    // Guardar reserva
+    // Guardar nueva reserva
     public boolean guardar(Reserva r) {
-        String sql = "INSERT INTO reserva (cliente_id, habitacion_numero, fecha_entrada, fecha_salida, estado, total) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO reserva (clienteId, habitacionNumero, fechaEntrada, fechaSalida, estado, total) "
+                   + "VALUES (?, ?, ?, ?, ?, ?)";
+
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setString(1, r.getClienteId());
+            ps.setInt(1, r.getClienteId());
             ps.setInt(2, r.getHabitacionNumero());
             ps.setDate(3, Date.valueOf(r.getFechaEntrada()));
             ps.setDate(4, Date.valueOf(r.getFechaSalida()));
-            ps.setString(5, "RESERVADA"); // Siempre al crear
+            ps.setString(5, r.getEstado());
             ps.setDouble(6, r.getTotal());
 
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al guardar reserva: " + e.getMessage());
         }
+
         return false;
+    }
+
+    // Actualizar reserva existente
+    public boolean actualizar(Reserva r) {
+        String sql = "UPDATE reserva SET clienteId=?, habitacionNumero=?, fechaEntrada=?, "
+                   + "fechaSalida=?, estado=?, total=? WHERE id=?";
+
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, r.getClienteId());
+            ps.setInt(2, r.getHabitacionNumero());
+            ps.setDate(3, Date.valueOf(r.getFechaEntrada()));
+            ps.setDate(4, Date.valueOf(r.getFechaSalida()));
+            ps.setString(5, r.getEstado());
+            ps.setDouble(6, r.getTotal());
+            ps.setInt(7, r.getId());
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar reserva: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    // Buscar reserva por ID
+    public Reserva buscarPorId(int id) {
+        String sql = "SELECT * FROM reserva WHERE id = ?";
+        Reserva r = null;
+
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    r = mapearReserva(rs);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al buscar reserva por ID: " + e.getMessage());
+        }
+
+        return r;
     }
 
     // Listar todas las reservas
     public List<Reserva> listar() {
         List<Reserva> lista = new ArrayList<>();
-        String sql = "SELECT * FROM reserva";
+        String sql = "SELECT * FROM reserva ORDER BY fechaEntrada DESC";
 
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                Reserva r = new Reserva();
-                r.setId(rs.getInt("id"));
-                r.setClienteId(rs.getString("cliente_id"));
-                r.setHabitacionNumero(rs.getInt("habitacion_numero"));
-                r.setFechaEntrada(rs.getDate("fecha_entrada").toLocalDate());
-                r.setFechaSalida(rs.getDate("fecha_salida").toLocalDate());
-                r.setEstado(rs.getString("estado"));
-                r.setTotal(rs.getDouble("total"));
-                lista.add(r);
+                lista.add(mapearReserva(rs));
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al listar reservas: " + e.getMessage());
         }
+
         return lista;
     }
 
-    // Actualizar estado según fecha
-    public void actualizarEstados() {
-        String sql = "UPDATE reserva SET estado = CASE " +
-                     "WHEN fecha_entrada <= CURDATE() AND fecha_salida >= CURDATE() THEN 'ACTIVA' " +
-                     "WHEN fecha_salida < CURDATE() THEN 'FINALIZADA' " +
-                     "ELSE 'RESERVADA' END";
-        try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    // Mapear ResultSet a objeto Reserva
+    private Reserva mapearReserva(ResultSet rs) throws SQLException {
+        Reserva r = new Reserva();
+        r.setId(rs.getInt("id"));
+        r.setClienteId(rs.getInt("clienteId"));
+        r.setHabitacionNumero(rs.getInt("habitacionNumero"));
+        r.setFechaEntrada(rs.getDate("fechaEntrada").toLocalDate());
+        r.setFechaSalida(rs.getDate("fechaSalida").toLocalDate());
+        r.setEstado(rs.getString("estado"));
+        r.setTotal(rs.getDouble("total"));
+        return r;
     }
 
-    // Consultar reservas por habitación y rango de fechas (para disponibilidad)
-    public boolean estaDisponible(int habitacionNumero, LocalDate entrada, LocalDate salida) {
-        String sql = "SELECT COUNT(*) FROM reserva WHERE habitacion_numero=? AND estado IN ('RESERVADA','ACTIVA') AND " +
-                     "((fecha_entrada <= ? AND fecha_salida > ?) OR (fecha_entrada < ? AND fecha_salida >= ?) OR (fecha_entrada >= ? AND fecha_salida <= ?))";
+    // Buscar reservas que se cruzan con un rango de fechas
+    public List<Reserva> buscarReservasPorRango(LocalDate entrada, LocalDate salida) {
+        List<Reserva> lista = new ArrayList<>();
+        String sql = "SELECT * FROM reserva WHERE (fechaEntrada <= ? AND fechaSalida >= ?)";
+
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setInt(1, habitacionNumero);
-            ps.setDate(2, Date.valueOf(salida));
-            ps.setDate(3, Date.valueOf(salida));
-            ps.setDate(4, Date.valueOf(entrada));
-            ps.setDate(5, Date.valueOf(entrada));
-            ps.setDate(6, Date.valueOf(entrada));
-            ps.setDate(7, Date.valueOf(salida));
+            ps.setDate(1, Date.valueOf(salida));
+            ps.setDate(2, Date.valueOf(entrada));
 
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) == 0; // si hay 0 reservas en ese rango → disponible
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapearReserva(rs));
+                }
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al buscar reservas por rango: " + e.getMessage());
         }
-        return false;
+
+        return lista;
     }
 }

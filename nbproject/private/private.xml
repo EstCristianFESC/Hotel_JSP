@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/LENOVO%20LOQ/Documents/NetBeansProjects/Hotel_JSP/src/java/modelo/Reserva.java</file>
-            <file>file:/C:/Users/LENOVO%20LOQ/Documents/NetBeansProjects/Hotel_JSP/src/java/dao/ReservaDAO.java</file>
-            <file>file:/C:/Users/LENOVO%20LOQ/Documents/NetBeansProjects/Hotel_JSP/src/java/controlador/ReservaController.java</file>
-            <file>file:/C:/Users/LENOVO%20LOQ/Documents/NetBeansProjects/Hotel_JSP/web/WEB-INF/vistas/reservas/reservaRegistrar.jsp</file>
+            <file>file:/C:/Users/CANAL%20ASESORES%20LTDA/Documents/NetBeansProjects/HotelWeb/web/WEB-INF/vistas/reservas/reservaRegistrar.jsp</file>
+            <file>file:/C:/Users/CANAL%20ASESORES%20LTDA/Documents/NetBeansProjects/HotelWeb/src/java/controlador/ReservaController.java</file>
+            <file>file:/C:/Users/CANAL%20ASESORES%20LTDA/Documents/NetBeansProjects/HotelWeb/src/java/dao/ReservaDAO.java</file>
+            <file>file:/C:/Users/CANAL%20ASESORES%20LTDA/Documents/NetBeansProjects/HotelWeb/src/java/dao/HabitacionDAO.java</file>
         </group>
     </open-files>
 </project-private>

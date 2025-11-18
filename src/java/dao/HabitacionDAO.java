@@ -1,9 +1,11 @@
 package dao;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import modelo.Habitacion;
+import modelo.Reserva;
 
 public class HabitacionDAO {
 
@@ -125,8 +127,53 @@ public class HabitacionDAO {
 
         return lista;
     }
+    
+    public List<Habitacion> listarDisponibles() {
+        List<Habitacion> lista = new ArrayList<>();
+        String sql = "SELECT * FROM habitacion WHERE disponible = 1";
 
-    public Object listarDisponibles() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Habitacion h = new Habitacion();
+                h.setNumero(rs.getInt("numero"));
+                h.setTipo(rs.getString("tipo"));
+                h.setDescripcion(rs.getString("descripcion"));
+                h.setPrecioPorNoche(rs.getDouble("precioPorNoche"));
+                h.setDisponible(rs.getBoolean("disponible"));
+                lista.add(h);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error al listar habitaciones disponibles: " + e.getMessage());
+        }
+
+        return lista;
+    }
+    
+    public List<Habitacion> listarDisponibles(LocalDate entrada, LocalDate salida) {
+        List<Habitacion> disponibles = new ArrayList<>();
+        List<Habitacion> todas = listar(); // traigo todas las habitaciones
+        ReservaDAO rdao = new ReservaDAO();
+
+        // Traer reservas que chocan con las fechas seleccionadas
+        List<Reserva> ocupadas = rdao.buscarReservasPorRango(entrada, salida);
+
+        // Crear lista de números de habitaciones ocupadas
+        List<Integer> numerosOcupados = new ArrayList<>();
+        for (Reserva r : ocupadas) {
+            numerosOcupados.add(r.getHabitacionNumero());
+        }
+
+        // Filtrar habitaciones libres
+        for (Habitacion h : todas) {
+            if (!numerosOcupados.contains(h.getNumero())) {
+                disponibles.add(h);
+            }
+        }
+
+        return disponibles;
     }
 }

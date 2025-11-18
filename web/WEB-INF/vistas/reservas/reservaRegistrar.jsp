@@ -1,48 +1,41 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="modelo.Cliente" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<h2>Registrar Reserva</h2>
 
-<div class="container mt-4">
-    <h3>Registrar Reserva</h3>
+<form action="${pageContext.request.contextPath}/ReservaController" method="post">
+    <input type="hidden" name="accion" value="guardar">
 
-    <!-- BUSCAR CLIENTE POR CÉDULA -->
-    <form method="get" action="${pageContext.request.contextPath}/ClienteController">
-        <input type="hidden" name="accion" value="buscarPorCedula">
-        <div class="row mb-3">
-            <div class="col-4">
-                <label for="clienteIdInput" class="form-label">Cédula Cliente</label>
-                <%
-                    Cliente c = (Cliente) request.getAttribute("clienteReserva");
-                    String cedulaValor = (c != null && c.getId() != null) ? c.getId() : 
-                                         (request.getParameter("cedula") != null ? request.getParameter("cedula") : "");
-                %>
-                <input type="text" class="form-control" id="clienteIdInput" name="cedula"
-                       value="<%= cedulaValor %>">
-            </div>
+    <!-- Seleccionar Cliente -->
+    <label for="clienteId">Cliente:</label>
+    <select name="clienteId" id="clienteId" required>
+        <c:forEach var="cliente" items="${clientes}">
+            <option value="${cliente.id}">${cliente.nombre}</option>
+        </c:forEach>
+    </select>
+    <br><br>
 
-            <div class="col-6">
-                <label for="clienteNombre" class="form-label">Nombre</label>
-                <%
-                    String nombreCompleto = "";
-                    if (c != null) {
-                        nombreCompleto = (c.getNombre() != null ? c.getNombre() : "") + " " +
-                                         (c.getApellido() != null ? c.getApellido() : "");
-                        nombreCompleto = nombreCompleto.trim();
-                    }
-                %>
-                <input type="text" class="form-control" id="clienteNombre" readonly
-                       value="<%= nombreCompleto %>">
-            </div>
+    <!-- Seleccionar Fechas -->
+    <label for="fechaEntrada">Fecha Entrada:</label>
+    <input type="date" id="fechaEntrada" name="fechaEntrada" required>
+    <br><br>
 
-            <div class="col-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">Buscar</button>
-            </div>
-        </div>
-    </form>
+    <label for="fechaSalida">Fecha Salida:</label>
+    <input type="date" id="fechaSalida" name="fechaSalida" required>
+    <br><br>
 
-    <%-- Mensaje si no se encuentra el cliente --%>
-    <% if (c == null && request.getParameter("cedula") != null && !request.getParameter("cedula").isBlank()) { %>
-        <div class="alert alert-warning mt-2">
-            Cliente no encontrado.
-        </div>
-    <% } %>
-</div>
+    <!-- Seleccionar Habitación -->
+    <label for="habitacionNumero">Habitación:</label>
+    <select name="habitacionNumero" id="habitacionNumero" required>
+        <c:forEach var="hab" items="${habitacionesDisponibles}">
+            <option value="${hab.numero}">${hab.tipo} - ${hab.numero} - $${hab.precioPorNoche}</option>
+        </c:forEach>
+    </select>
+    <br><br>
+
+    <!-- Total (se puede calcular en backend) -->
+    <label for="total">Total:</label>
+    <input type="text" id="total" name="total" readonly value="${total}">
+    <br><br>
+
+    <button type="submit">Registrar Reserva</button>
+</form>
