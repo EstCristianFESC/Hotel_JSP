@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import modelo.Cliente;
 
-@WebServlet(name = "ClienteController", urlPatterns = {"/ClienteController"})
+@WebServlet(name = "ClienteController", urlPatterns = { "/ClienteController" })
 public class ClienteController extends HttpServlet {
 
     private final ClienteDAO clienteDAO = new ClienteDAO();
@@ -36,7 +36,7 @@ public class ClienteController extends HttpServlet {
             } else if ("listar".equals(accion)) {
                 List<Cliente> lista = clienteDAO.buscarPorCriterio("");
                 request.setAttribute("listaClientes", lista);
-                
+
             } else if ("buscarPorCedula".equals(accion)) {
                 String cedula = request.getParameter("cedula");
                 Cliente cli = null;
@@ -95,8 +95,8 @@ public class ClienteController extends HttpServlet {
                     String nombreBuscar = request.getParameter("nombre");
 
                     // Si el usuario no pone nada, pasamos cadena vacía
-                    String criterio = (idBuscar != null && !idBuscar.isBlank()) ? idBuscar.trim() :
-                                      (nombreBuscar != null && !nombreBuscar.isBlank()) ? nombreBuscar.trim() : "";
+                    String criterio = (idBuscar != null && !idBuscar.isBlank()) ? idBuscar.trim()
+                            : (nombreBuscar != null && !nombreBuscar.isBlank()) ? nombreBuscar.trim() : "";
 
                     List<Cliente> lista = clienteDAO.buscarPorCriterio(criterio);
 
@@ -133,7 +133,8 @@ public class ClienteController extends HttpServlet {
     private void guardarCliente(HttpServletRequest request) {
         Cliente c = construirCliente(request);
         if (!clienteDAO.guardar(c)) {
-            throw new RuntimeException("No se pudo guardar el cliente. Posiblemente ya existe o los datos son inválidos.");
+            throw new RuntimeException(
+                    "No se pudo guardar el cliente. Posiblemente ya existe o los datos son inválidos.");
         }
     }
 
@@ -147,11 +148,13 @@ public class ClienteController extends HttpServlet {
     private Cliente construirCliente(HttpServletRequest request) {
         Cliente c = new Cliente();
         String tipo = request.getParameter("tipo");
-        if (tipo == null || tipo.isBlank()) throw new RuntimeException("Debe seleccionar un tipo de cliente.");
+        if (tipo == null || tipo.isBlank())
+            throw new RuntimeException("Debe seleccionar un tipo de cliente.");
         c.setTipo(tipo.toUpperCase());
 
         String id = request.getParameter("id");
-        if (id == null || id.trim().isEmpty()) throw new RuntimeException("Debe especificar un ID/NIT válido.");
+        if (id == null || id.trim().isEmpty())
+            throw new RuntimeException("Debe especificar un ID/NIT válido.");
         c.setId(id.trim());
 
         c.setNombre(validarCampo(request.getParameter("nombre")));

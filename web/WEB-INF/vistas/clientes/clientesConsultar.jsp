@@ -10,9 +10,16 @@
 
     <!-- Mensaje -->
     <div id="mensajeCliente"
-         class="alert <%= (request.getAttribute("tipoMensaje") != null) ? request.getAttribute("tipoMensaje") : "alert-info" %>"
-         style="display: <%= (request.getAttribute("mensaje") != null) ? "block" : "none" %>;">
-        <%= (request.getAttribute("mensaje") != null) ? request.getAttribute("mensaje") : "Ingrese criterios de búsqueda." %>
+         class="toast align-items-center text-bg-<%= (request.getAttribute("tipoMensaje") != null) ? request.getAttribute("tipoMensaje").toString().replace("alert-", "") : "info" %> border-0"
+         role="alert" aria-live="assertive" aria-atomic="true"
+         style="position: fixed; top: 1rem; right: 1rem; min-width: 260px; z-index: 9999;">
+        <div class="d-flex">
+            <div class="toast-body" style="font-size: 0.85rem;">
+                <%= (request.getAttribute("mensaje") != null) ? request.getAttribute("mensaje") : "Ingrese criterios de búsqueda." %>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast" aria-label="Cerrar"></button>
+        </div>
     </div>
 
     <div class="card shadow-lg border-0 rounded-4">
@@ -95,23 +102,23 @@
 <script>
     function limpiarBusqueda(){
         document.getElementById("buscarId").value = "";
-        document.getElementById("mensajeCliente").style.display = "none";
 
-        // Vaciar tabla
+        const toastEl = document.getElementById("mensajeCliente");
+        if (toastEl) {
+            const bsToast = bootstrap.Toast.getInstance(toastEl);
+            if (bsToast) bsToast.hide();
+        }
+
         const tbody = document.querySelector('table tbody');
         tbody.innerHTML = '<tr><td colspan="7" class="text-center">No hay clientes para mostrar.</td></tr>';
     }
-    
-    document.addEventListener("DOMContentLoaded", () => {
-        const mensaje = document.getElementById("mensajeCliente");
-        if (mensaje && mensaje.style.display === "block") {
-            setTimeout(() => {
-                mensaje.style.transition = "opacity 0.5s ease";
-                mensaje.style.opacity = "0";
-                setTimeout(() => {
-                    mensaje.style.display = "none";
-                }, 500); // espera a que termine la animación
-            }, 3000); // 3 segundos antes de desaparecer
-        }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var toastEl = document.getElementById('mensajeCliente');
+
+        <% if(request.getAttribute("mensaje") != null) { %>
+            var bsToast = new bootstrap.Toast(toastEl, { delay: 3000, autohide: true });
+            bsToast.show();
+        <% } %>
     });
 </script>

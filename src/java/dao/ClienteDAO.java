@@ -14,7 +14,7 @@ public class ClienteDAO {
     public boolean guardar(Cliente c) {
         String sql = "INSERT INTO cliente (id, tipo, nombre, apellido, telefono, direccion, email) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, c.getId());
             ps.setString(2, c.getTipo());
@@ -39,7 +39,7 @@ public class ClienteDAO {
     public boolean editar(Cliente c) {
         String sql = "UPDATE cliente SET tipo=?, nombre=?, apellido=?, telefono=?, direccion=?, email=? WHERE id=?";
         try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, c.getTipo());
             ps.setString(2, c.getNombre());
@@ -64,7 +64,7 @@ public class ClienteDAO {
         String sql = "SELECT * FROM cliente WHERE id LIKE ? OR nombre LIKE ? OR apellido LIKE ?";
 
         try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             String like = "%" + criterio + "%";
             ps.setString(1, like);
@@ -89,13 +89,13 @@ public class ClienteDAO {
         }
         return lista;
     }
-    
+
     public Cliente buscarPorId(String id) {
         Cliente c = null;
         String sql = "SELECT * FROM cliente WHERE id = ?";
 
         try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -121,6 +121,7 @@ public class ClienteDAO {
     }
 
     public Object listar() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from
+                                                                       // nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

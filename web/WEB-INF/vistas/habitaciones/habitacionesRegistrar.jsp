@@ -7,9 +7,16 @@
     
     <!-- Mensaje -->
     <div id="mensajeHabitacion"
-         class="alert <%= (request.getAttribute("tipoMensaje") != null) ? request.getAttribute("tipoMensaje") : "alert-info" %>"
-         style="display: <%= (request.getAttribute("mensaje") != null) ? "block" : "none" %>;">
-        <%= (request.getAttribute("mensaje") != null) ? request.getAttribute("mensaje") : "" %>
+         class="toast align-items-center text-bg-<%= (request.getAttribute("tipoMensaje") != null) ? request.getAttribute("tipoMensaje").toString().replace("alert-", "") : "info" %> border-0"
+         role="alert" aria-live="assertive" aria-atomic="true"
+         style="position: fixed; top: 1rem; right: 1rem; min-width: 260px; z-index: 9999;">
+        <div class="d-flex">
+            <div class="toast-body" style="font-size: 0.85rem;">
+                <%= (request.getAttribute("mensaje") != null) ? request.getAttribute("mensaje") : "" %>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast" aria-label="Cerrar"></button>
+        </div>
     </div>
 
     <form id="formHabitacion" action="${pageContext.request.contextPath}/HabitacionController" method="post" class="shadow p-4 bg-white rounded">
@@ -92,31 +99,25 @@
 </div>
                     
 <script>
+    // Formatear precio automáticamente
     const precioInput = document.getElementById('precioPorNoche');
 
-    precioInput.addEventListener('input', function(e) {
+    precioInput.addEventListener('input', function () {
         let value = this.value.replace(/\D/g, '');
-        if (value) {
-        this.value = Number(value).toLocaleString('de-DE');
-        } else {
-            this.value = '';
-        }
+        this.value = value ? Number(value).toLocaleString('de-DE') : '';
     });
-    
-    // Función para desaparecer mensaje automáticamente
-    document.addEventListener("DOMContentLoaded", () => {
-        const mensaje = document.getElementById("mensajeHabitacion");
-        if (mensaje && mensaje.style.display === "block") {
-            setTimeout(() => {
-                mensaje.style.transition = "opacity 0.5s ease";
-                mensaje.style.opacity = "0";
-                setTimeout(() => {
-                    mensaje.style.display = "none";
-                }, 500); // espera a que termine la animación
-            }, 3000); // 3 segundos antes de desaparecer
-        }
+
+    // Mostrar toast si hay mensaje desde el backend
+    document.addEventListener("DOMContentLoaded", function () {
+        var toastEl = document.getElementById('mensajeHabitacion');
+
+        <% if(request.getAttribute("mensaje") != null) { %>
+            var bsToast = new bootstrap.Toast(toastEl, { delay: 3000, autohide: true });
+            bsToast.show();
+        <% } %>
     });
-    
+
+    // Cambiar estado según checkbox
     const check = document.getElementById("checkDisponible");
     const estado = document.getElementById("estadoHabitacion");
 

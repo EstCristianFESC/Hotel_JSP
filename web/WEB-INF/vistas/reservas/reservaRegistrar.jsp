@@ -1,41 +1,44 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<h2>Registrar Reserva</h2>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@page import="java.util.*, modelo.Cliente"%>
+<%@page import="java.util.*, modelo.Habitacion"%>
+<%@page import="java.util.*, modelo.Reserva"%>
 
-<form action="${pageContext.request.contextPath}/ReservaController" method="post">
-    <input type="hidden" name="accion" value="guardar">
+<h2>Crear Reserva</h2>
 
-    <!-- Seleccionar Cliente -->
-    <label for="clienteId">Cliente:</label>
-    <select name="clienteId" id="clienteId" required>
-        <c:forEach var="cliente" items="${clientes}">
-            <option value="${cliente.id}">${cliente.nombre}</option>
+<c:if test="${not empty error}">
+    <div style="color:red; font-weight:bold;">${error}</div>
+</c:if>
+
+<form action="ReservaServlet" method="post">
+
+    <input type="hidden" name="accion" value="guardar" />
+
+    <label>Cliente:</label>
+    <select name="clienteId" required>
+        <c:forEach var="c" items="${clientes}">
+            <option value="${c.id}">${c.nombre} - ${c.documento}</option>
         </c:forEach>
     </select>
-    <br><br>
+    <br /><br />
 
-    <!-- Seleccionar Fechas -->
-    <label for="fechaEntrada">Fecha Entrada:</label>
-    <input type="date" id="fechaEntrada" name="fechaEntrada" required>
-    <br><br>
-
-    <label for="fechaSalida">Fecha Salida:</label>
-    <input type="date" id="fechaSalida" name="fechaSalida" required>
-    <br><br>
-
-    <!-- Seleccionar Habitación -->
-    <label for="habitacionNumero">Habitación:</label>
-    <select name="habitacionNumero" id="habitacionNumero" required>
-        <c:forEach var="hab" items="${habitacionesDisponibles}">
-            <option value="${hab.numero}">${hab.tipo} - ${hab.numero} - $${hab.precioPorNoche}</option>
+    <label>Habitación:</label>
+    <select name="habitacion" required>
+        <c:forEach var="h" items="${habitaciones}">
+            <option value="${h.numero}">
+                Habitación ${h.numero} — ${h.tipo} — $${h.precio}
+            </option>
         </c:forEach>
     </select>
-    <br><br>
+    <br /><br />
 
-    <!-- Total (se puede calcular en backend) -->
-    <label for="total">Total:</label>
-    <input type="text" id="total" name="total" readonly value="${total}">
-    <br><br>
+    <label>Fecha de entrada:</label>
+    <input type="date" name="entrada" required />
+    <br /><br />
 
-    <button type="submit">Registrar Reserva</button>
+    <label>Fecha de salida:</label>
+    <input type="date" name="salida" required />
+    <br /><br />
+
+    <button type="submit">Guardar Reserva</button>
+
 </form>

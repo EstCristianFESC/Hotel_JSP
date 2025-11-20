@@ -8,9 +8,15 @@
 
     <!-- Mensaje -->
     <div id="mensajeHabitacion"
-         class="alert <%= (request.getAttribute("tipoMensaje") != null) ? request.getAttribute("tipoMensaje") : "alert-info" %>"
-         style="display: <%= (request.getAttribute("mensaje") != null) ? "block" : "none" %>;">
-        <%= (request.getAttribute("mensaje") != null) ? request.getAttribute("mensaje") : "Ingrese criterios de búsqueda." %>
+         class="toast align-items-center text-bg-<%= (request.getAttribute("tipoMensaje") != null) ? request.getAttribute("tipoMensaje").toString().replace("alert-", "") : "info" %> border-0"
+         role="alert" aria-live="assertive" aria-atomic="true"
+         style="position: fixed; top: 1rem; right: 1rem; min-width: 260px; z-index: 9999;">
+        <div class="d-flex">
+            <div class="toast-body" style="font-size: 0.85rem;">
+                <%= (request.getAttribute("mensaje") != null) ? request.getAttribute("mensaje") : "Ingrese criterios de búsqueda." %>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
     </div>
 
     <div class="card shadow-lg border-0 rounded-4">
@@ -99,28 +105,29 @@
 </div>
 
 <script>
-    function limpiarBusqueda() {
-        document.getElementById("formBuscarHabitacion").reset();
-    }
+    // Mostrar toast si hay mensaje desde backend
+    document.addEventListener("DOMContentLoaded", function () {
+        var toastEl = document.getElementById('mensajeHabitacion');
 
-    // Desaparece el mensaje automáticamente
-    window.addEventListener("DOMContentLoaded", () => {
-        const mensaje = document.getElementById("mensajeHabitacion");
-        if (mensaje && mensaje.style.display === "block") {
-            setTimeout(() => {
-                mensaje.style.transition = "opacity 0.5s ease";
-                mensaje.style.opacity = "0";
-                setTimeout(() => { mensaje.style.display = "none"; }, 500);
-            }, 3000);
-        }
+        <% if(request.getAttribute("mensaje") != null) { %>
+            var bsToast = new bootstrap.Toast(toastEl, { delay: 3000, autohide: true });
+            bsToast.show();
+        <% } %>
     });
-    
+
+    // Limpiar búsqueda + ocultar toast + reset tabla
     function limpiarBusqueda() {
+        // limpiar campos
         document.getElementById("buscarNumero").value = "";
         document.getElementById("buscarEstado").value = "";
 
-        document.getElementById("mensajeHabitacion").style.display = "none";
+        // ocultar toast
+        const toastEl = document.getElementById("mensajeHabitacion");
+        var bsToast = bootstrap.Toast.getInstance(toastEl);
+        if (bsToast) bsToast.hide();
+        toastEl.style.display = "none";
 
+        // limpiar tabla
         const tbody = document.querySelector('table tbody');
         tbody.innerHTML = '<tr><td colspan="6" class="text-center">No hay habitaciones para mostrar.</td></tr>';
     }

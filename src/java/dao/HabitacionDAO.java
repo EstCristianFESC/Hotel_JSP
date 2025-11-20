@@ -12,7 +12,7 @@ public class HabitacionDAO {
     public boolean guardar(Habitacion h) {
         String sql = "INSERT INTO habitacion (numero, tipo, descripcion, precioPorNoche, disponible) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, h.getNumero());
             ps.setString(2, h.getTipo());
@@ -35,7 +35,7 @@ public class HabitacionDAO {
     public boolean editar(Habitacion h) {
         String sql = "UPDATE habitacion SET tipo=?, descripcion=?, precioPorNoche=?, disponible=? WHERE numero=?";
         try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, h.getTipo());
             ps.setString(2, h.getDescripcion());
             ps.setLong(3, (long) h.getPrecioPorNoche());
@@ -53,8 +53,8 @@ public class HabitacionDAO {
         String sql = "SELECT * FROM habitacion";
 
         try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Habitacion h = new Habitacion();
@@ -77,7 +77,7 @@ public class HabitacionDAO {
         Habitacion h = null;
         String sql = "SELECT * FROM habitacion WHERE numero = ?";
         try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, numero);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -100,7 +100,7 @@ public class HabitacionDAO {
         String sql = "SELECT * FROM habitacion WHERE CAST(numero AS CHAR) LIKE ? OR disponible LIKE ?";
 
         try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             String like = "%" + criterio + "%";
             ps.setString(1, like);
@@ -127,14 +127,14 @@ public class HabitacionDAO {
 
         return lista;
     }
-    
+
     public List<Habitacion> listarDisponibles() {
         List<Habitacion> lista = new ArrayList<>();
         String sql = "SELECT * FROM habitacion WHERE disponible = 1";
 
         try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Habitacion h = new Habitacion();
@@ -152,7 +152,7 @@ public class HabitacionDAO {
 
         return lista;
     }
-    
+
     public List<Habitacion> listarDisponibles(LocalDate entrada, LocalDate salida) {
         List<Habitacion> disponibles = new ArrayList<>();
         List<Habitacion> todas = listar(); // traigo todas las habitaciones
