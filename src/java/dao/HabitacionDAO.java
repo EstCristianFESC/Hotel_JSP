@@ -176,4 +176,31 @@ public class HabitacionDAO {
 
         return disponibles;
     }
+    
+    public Habitacion obtenerPorId(int id) {
+        Habitacion h = null;
+        String sql = "SELECT * FROM habitacion WHERE numero = ?"; // tu PK es 'numero'
+
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    h = new Habitacion();
+                    h.setNumero(rs.getInt("numero"));
+                    h.setTipo(rs.getString("tipo"));
+                    h.setDescripcion(rs.getString("descripcion"));
+                    h.setPrecioPorNoche(rs.getDouble("precioPorNoche"));
+                    h.setDisponible(rs.getBoolean("disponible"));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return h;
+    }
 }

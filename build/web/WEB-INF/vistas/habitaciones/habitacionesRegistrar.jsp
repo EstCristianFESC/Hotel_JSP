@@ -74,7 +74,7 @@
                 <div class="input-group align-items-center">
                     <span class="input-group-text"><i class="bi bi-door-open"></i></span>
                     <input type="text" id="estadoHabitacion" class="form-control text-center" readonly
-                           value="<%= (habitacion != null && habitacion.isDisponible()) ? "Disponible" : "Ocupada" %>">
+                           value="<%= (habitacion != null && habitacion.isDisponible()) ? "Ocupada" : "Disponible" %>">
                     <div class="input-group-text">
                         <div class="form-check form-switch m-0">
                             <input class="form-check-input" type="checkbox" id="checkDisponible"

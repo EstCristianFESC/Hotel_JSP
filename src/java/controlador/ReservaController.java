@@ -3,87 +3,159 @@ package controlador;
 import dao.ClienteDAO;
 import dao.HabitacionDAO;
 import dao.ReservaDAO;
-import modelo.Reserva;
+
+import modelo.Cliente;
 import modelo.Habitacion;
+import modelo.Reserva;
 
 import jakarta.servlet.*;
-import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 @WebServlet("/ReservaController")
 public class ReservaController extends HttpServlet {
 
-    private ClienteDAO clienteDAO = new ClienteDAO();
-    private HabitacionDAO habitacionDAO = new HabitacionDAO();
-    private ReservaDAO reservaDAO = new ReservaDAO();
+    // === INSTANCIAS DAO (FALTABA ESTA) ===
+    private final ClienteDAO clienteDAO = new ClienteDAO();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String accion = req.getParameter("accion");
-
-        if (accion == null)
-            accion = "crear";
+        String accion = request.getParameter("accion");
+        if (accion == null) accion = "form";
 
         switch (accion) {
-            case "crear":
-                req.setAttribute("clientes", clienteDAO.listar());
-                req.setAttribute("habitaciones", habitacionDAO.listarDisponibles());
-                req.getRequestDispatcher("reservas/crear.jsp").forward(req, resp);
-                break;
 
-            case "listar":
-                req.setAttribute("reservas", reservaDAO.listar());
-                req.getRequestDispatcher("reservas/listar.jsp").forward(req, resp);
-                break;
+            case "buscarPorCedula": {
 
-            default:
-                resp.sendRedirect("ReservaController?accion=listar");
+                ClienteDAO clienteDAO = new ClienteDAO(); // <- LO QUE TE FALTABA
+
+                String cedula = request.getParameter("cedula");
+                Cliente cli = null;
+
+                if (cedula != null && !cedula.isBlank()) {
+                    cli = clienteDAO.buscarPorId(cedula.trim());    
+                }
+
+                request.setAttribute("clienteReserva", cli);
+
+                if (cli == null) {
+                    request.setAttribute("mensaje", "Cliente no encontrado.");
+                    request.setAttribute("tipoMensaje", "alert-danger");
+                }
+
+                request.setAttribute("page", "reservas/reservaRegistrar.jsp");
+                request.getRequestDispatcher("/WEB-INF/vistas/layout.jsp")
+                       .forward(request, response);
+
+                return;
+                
+            } case "buscarHabitacion": {
+
+                HabitacionDAO hdao = new HabitacionDAO();
+                List<Habitacion> disponibles = hdao.listarDisponibles();
+
+                request.setAttribute("habitacionesDisponibles", disponibles);
+
+                request.getRequestDispatcher(
+                        "/WEB-INF/vistas/layout.jsp?page=reservas/reservaRegistrar.jsp"
+                ).forward(request, response);
+                break;
+            }
+
+            default: {
+
+                request.getRequestDispatcher(
+                        "/WEB-INF/vistas/layout.jsp?page=reservas/reservaRegistrar.jsp"
+                ).forward(request, response);
+            }
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String accion = req.getParameter("accion");
+        String accion = request.getParameter("accion");
+        if (accion == null) accion = "registrar";
 
-        if ("guardar".equals(accion)) {
+        switch (accion) {
 
-            int clienteId = Integer.parseInt(req.getParameter("clienteId"));
-            int habitacion = Integer.parseInt(req.getParameter("habitacion"));
-            LocalDate entrada = LocalDate.parse(req.getParameter("entrada"));
-            LocalDate salida = LocalDate.parse(req.getParameter("salida"));
+            case "registrar": {
 
-            // Validar disponibilidad
-            if (!reservaDAO.habitacionDisponible(habitacion, entrada, salida)) {
-                req.setAttribute("error", "La habitación NO está disponible en esas fechas.");
-                req.setAttribute("clientes", clienteDAO.listar());
-                req.setAttribute("habitaciones", habitacionDAO.listarDisponibles());
-                req.getRequestDispatcher("reservas/crear.jsp").forward(req, resp);
-                return;
+                try {
+                    String cedula = request.getParameter("cedula");
+                    int idHabitacion = Integer.parseInt(request.getParameter("idHabitacion"));
+                    LocalDate fechaEntrada = LocalDate.parse(request.getParameter("fechaEntrada"));
+                    LocalDate fechaSalida = LocalDate.parse(request.getParameter("fechaSalida"));
+
+                    // Buscar cliente
+                    ClienteDAO cdao = new ClienteDAO();
+                    Cliente cliente = cdao.buscarPorId(cedula);
+
+                    if (cliente == null) {
+                        request.setAttribute("mensajeError", "Cliente no encontrado.");
+                        break;
+                    }
+
+                    // Traer habitación
+                    HabitacionDAO hdao = new HabitacionDAO();
+                    Habitacion hab = hdao.obtenerPorId(idHabitacion);
+
+                    if (hab == null) {
+                        request.setAttribute("mensajeError", "Habitación no válida.");
+                        break;
+                    }
+
+                    // Validar disponibilidad
+                    ReservaDAO rdao = new ReservaDAO();
+
+                    boolean disponible = rdao.habitacionDisponible(
+                            hab.getNumero(),
+                            fechaEntrada,
+                            fechaSalida
+                    );
+
+                    if (!disponible) {
+                        request.setAttribute("mensajeError", "La habitación no está disponible en esas fechas.");
+                        break;
+                    }
+
+                    // Crear reserva
+                    Reserva r = new Reserva();
+                    r.setClienteId(Integer.parseInt(cliente.getId()));
+                    r.setHabitacionNumero(hab.getNumero());
+                    r.setFechaEntrada(fechaEntrada);
+                    r.setFechaSalida(fechaSalida);
+                    r.setEstado("RESERVADA");
+
+                    // Calcular total
+                    double total = rdao.calcularTotal(hab.getPrecioPorNoche(), fechaEntrada, fechaSalida);
+                    r.setTotal(total);
+
+                    boolean ok = rdao.insertar(r);
+
+                    if (ok) {
+                        request.setAttribute("mensajeSuccess", "Reserva registrada exitosamente.");
+                    } else {
+                        request.setAttribute("mensajeError", "No se pudo registrar la reserva.");
+                    }
+
+                } catch (Exception e) {
+                    request.setAttribute("mensajeError", "Error en el registro: " + e.getMessage());
+                }
+
+                request.getRequestDispatcher(
+                        "/WEB-INF/vistas/layout.jsp?page=reservas/reservaRegistrar.jsp"
+                ).forward(request, response);
+
+                break;
             }
-
-            // Obtener precio de la habitación
-            Habitacion h = habitacionDAO.buscarPorNumero(habitacion);
-            double total = reservaDAO.calcularTotal(h.getPrecioPorNoche(), entrada, salida);
-
-            // Crear reserva
-            Reserva r = new Reserva();
-            r.setClienteId(clienteId);
-            r.setHabitacionNumero(habitacion);
-            r.setFechaEntrada(entrada);
-            r.setFechaSalida(salida);
-            r.setEstado("RESERVADA");
-            r.setTotal(total);
-
-            reservaDAO.insertar(r);
-
-            resp.sendRedirect("ReservaController?accion=listar");
         }
     }
 }

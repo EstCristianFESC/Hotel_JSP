@@ -52,8 +52,8 @@ public class ClienteController extends HttpServlet {
                     request.setAttribute("tipoMensaje", "alert-danger");
                 }
 
-                // ENVIAR DIRECTO A LA VISTA DE RESERVAS (NO LOGIN!)
-                String urlDestino = "/WEB-INF/vistas/layout.jsp?page=reservas/reservaRegistrar.jsp";
+                request.setAttribute("page", "reservas/reservaRegistrar.jsp");
+                String urlDestino = "/WEB-INF/vistas/layout.jsp";
                 request.getRequestDispatcher(urlDestino).forward(request, response);
                 return;
             }
