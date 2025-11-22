@@ -23,44 +23,6 @@
     <div class="card shadow-lg border-0 rounded-4">
         <div class="card-body px-4 py-4">
 
-            <!-- ================== FORM BUSCAR CLIENTE ================== -->
-            <form action="${pageContext.request.contextPath}/ReservaController" method="get" class="mb-4">
-                <input type="hidden" name="accion" value="buscarPorCedula">
-
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Número de documento *</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-vcard"></i></span>
-                            <input type="text" name="cedula" class="form-control"
-                                   placeholder="Ingrese cédula"
-                                   value="${param.cedula != null ? param.cedula : ''}" required>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3 d-flex align-items-end">
-                        <button class="btn btn-primary w-100" type="submit">
-                            <i class="bi bi-search me-1"></i>Buscar Cliente
-                        </button>
-                    </div>
-                </div>
-            </form>
-
-            <!-- ================== DATOS DEL CLIENTE ================== -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Cliente encontrado</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person-check"></i></span>
-                        <input type="text" class="form-control"
-                               value="${clienteReserva != null ? clienteReserva.nombre + ' ' + clienteReserva.apellido : ''}"
-                               placeholder="Nombre del cliente"
-                               readonly>
-                    </div>
-                </div>
-            </div>
-
-            <hr class="my-4">
             <!-- ================== FORM FECHAS ================== -->
             <form action="${pageContext.request.contextPath}/ReservaController"
                   method="get" class="mb-4">
@@ -69,13 +31,14 @@
                 <input type="hidden" name="cedula" value="${param.cedula}">
 
                 <div class="row g-3">
+
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Fecha de entrada *</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
                             <input type="date" id="fechaEntrada" name="fechaEntrada"
                                    class="form-control"
-                                   value="${param.fechaEntrada != null ? param.fechaEntrada : ''}"
+                                   value="${fechaEntrada}"
                                    required>
                         </div>
                     </div>
@@ -86,7 +49,7 @@
                             <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
                             <input type="date" id="fechaSalida" name="fechaSalida"
                                    class="form-control"
-                                   value="${param.fechaSalida != null ? param.fechaSalida : ''}"
+                                   value="${fechaSalida}"
                                    required>
                         </div>
                     </div>
@@ -96,6 +59,7 @@
                             <i class="bi bi-door-open-fill me-1"></i>Ver Habitaciones
                         </button>
                     </div>
+
                 </div>
             </form>
 
@@ -108,12 +72,12 @@
                 <div class="table-responsive">
                     <table class="table table-striped table-hover align-middle">
                         <thead class="table-dark">
-                            <tr>
-                                <th>Número</th>
-                                <th>Tipo</th>
-                                <th>Precio / noche</th>
-                                <th>Acción</th>
-                            </tr>
+                        <tr>
+                            <th>Número</th>
+                            <th>Tipo</th>
+                            <th>Precio / noche</th>
+                            <th>Acción</th>
+                        </tr>
                         </thead>
                         <tbody>
                         <c:forEach var="h" items="${habitaciones}">
@@ -125,8 +89,8 @@
                                     <form action="${pageContext.request.contextPath}/ReservaController" method="post">
                                         <input type="hidden" name="accion" value="crearReserva">
                                         <input type="hidden" name="cedula" value="${param.cedula}">
-                                        <input type="hidden" name="fechaEntrada" value="${param.fechaEntrada}">
-                                        <input type="hidden" name="fechaSalida" value="${param.fechaSalida}">
+                                        <input type="hidden" name="fechaEntrada" value="${fechaEntrada}">
+                                        <input type="hidden" name="fechaSalida" value="${fechaSalida}">
                                         <input type="hidden" name="habitacion" value="${h.numero}">
                                         <button class="btn btn-outline-primary btn-sm" type="submit">
                                             <i class="bi bi-bookmark-check me-1"></i>Reservar
@@ -139,6 +103,7 @@
                     </table>
                 </div>
             </c:if>
+
         </div>
     </div>
 </div>

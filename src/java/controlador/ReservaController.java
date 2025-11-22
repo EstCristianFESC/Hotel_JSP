@@ -66,6 +66,40 @@ public class ReservaController extends HttpServlet {
                         "/WEB-INF/vistas/layout.jsp?page=reservas/reservaRegistrar.jsp"
                 ).forward(request, response);
                 break;
+                
+            } case "buscarDisponibles": {
+                String fechaE = request.getParameter("fechaEntrada");
+                String fechaS = request.getParameter("fechaSalida");
+
+                if (fechaE == null || fechaS == null || fechaE.isBlank() || fechaS.isBlank()) {
+                    request.setAttribute("mensaje", "Debe seleccionar ambas fechas.");
+                    request.setAttribute("tipoMensaje", "alert-warning");
+
+                    request.setAttribute("page", "reservas/reservaRegistrar.jsp");
+                    request.getRequestDispatcher("/WEB-INF/vistas/layout.jsp").forward(request, response);
+                    return;
+                }
+
+                LocalDate entrada = LocalDate.parse(fechaE);
+                LocalDate salida = LocalDate.parse(fechaS);
+
+                HabitacionDAO hdao = new HabitacionDAO();
+                ReservaDAO rdao = new ReservaDAO();
+
+                List<Habitacion> todas = hdao.listar();
+
+                List<Habitacion> disponibles = todas.stream()
+                        .filter(h -> rdao.habitacionDisponible(h.getNumero(), entrada, salida))
+                        .toList();
+
+                request.setAttribute("habitaciones", disponibles);
+                request.setAttribute("fechaEntrada", fechaE);
+                request.setAttribute("fechaSalida", fechaS);
+
+                request.setAttribute("page", "reservas/reservaRegistrar.jsp");
+                request.getRequestDispatcher("/WEB-INF/vistas/layout.jsp").forward(request, response);
+
+                return;
             }
 
             default: {

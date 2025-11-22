@@ -8,7 +8,11 @@
         return;
     }
 
-    String pagina = request.getParameter("page");
+    String pagina = (String) request.getAttribute("page");
+    if (pagina == null || pagina.trim().isEmpty()) {
+        pagina = request.getParameter("page");
+    }
+
     if (pagina == null || pagina.trim().isEmpty()) {
         pagina = "inicio/inicio.jsp";
     } else {

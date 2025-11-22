@@ -33,52 +33,34 @@ public class ReservaDAO {
     }
 
     public boolean habitacionDisponible(int numeroHabitacion, LocalDate entrada, LocalDate salida) {
-        String sql = "SELECT * FROM reservas "
-                   + "WHERE habitacion_numero = ? "
-                   + "AND (? < fecha_salida AND ? > fecha_entrada) "
-                   + "AND estado IN ('RESERVADA','ACTIVA')";
+        String sql = """
+            SELECT COUNT(*) 
+            FROM reservas
+            WHERE habitacion_numero = ?
+            AND estado IN ('RESERVADA','ACTIVA')
+            AND NOT (
+                fecha_salida <= ?  -- sale antes de que yo entre
+                OR fecha_entrada >= ?  -- entra después de que yo salga
+            )
+            """;
 
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, numeroHabitacion);
-            ps.setDate(2, Date.valueOf(salida));
-            ps.setDate(3, Date.valueOf(entrada));
+            ps.setDate(2, Date.valueOf(entrada)); // aquí va entrada
+            ps.setDate(3, Date.valueOf(salida));  // aquí va salida
 
             ResultSet rs = ps.executeQuery();
-            return !rs.next();
+            rs.next();
+
+            // Si COUNT = 0 → está disponible
+            return rs.getInt(1) == 0;
 
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
-    }
-
-    public List<Reserva> listar() {
-        List<Reserva> lista = new ArrayList<>();
-        String sql = "SELECT * FROM reservas";
-
-        try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                Reserva r = new Reserva();
-                r.setId(rs.getInt("id"));
-                r.setClienteId(rs.getInt("cliente_id"));
-                r.setHabitacionNumero(rs.getInt("habitacion_numero"));
-                r.setFechaEntrada(rs.getDate("fecha_entrada").toLocalDate());
-                r.setFechaSalida(rs.getDate("fecha_salida").toLocalDate());
-                r.setEstado(rs.getString("estado"));
-                r.setTotal(rs.getDouble("total"));
-                lista.add(r);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return lista;
     }
 
     public double calcularTotal(double precio, LocalDate entrada, LocalDate salida) {
