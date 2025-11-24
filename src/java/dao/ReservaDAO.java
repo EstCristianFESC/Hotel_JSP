@@ -38,9 +38,9 @@ public class ReservaDAO {
             FROM reservas
             WHERE habitacion_numero = ?
             AND estado IN ('RESERVADA','ACTIVA')
-            AND NOT (
-                fecha_salida <= ?  -- sale antes de que yo entre
-                OR fecha_entrada >= ?  -- entra después de que yo salga
+            AND (
+                fecha_entrada < ? 
+                AND fecha_salida > ?
             )
             """;
 
@@ -48,13 +48,12 @@ public class ReservaDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, numeroHabitacion);
-            ps.setDate(2, Date.valueOf(entrada)); // aquí va entrada
-            ps.setDate(3, Date.valueOf(salida));  // aquí va salida
+            ps.setDate(2, Date.valueOf(salida));
+            ps.setDate(3, Date.valueOf(entrada));
 
             ResultSet rs = ps.executeQuery();
             rs.next();
 
-            // Si COUNT = 0 → está disponible
             return rs.getInt(1) == 0;
 
         } catch (Exception e) {
@@ -70,6 +69,6 @@ public class ReservaDAO {
     }
 
     List<Reserva> buscarReservasPorRango(LocalDate entrada, LocalDate salida) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -28,7 +28,6 @@
                   method="get" class="mb-4">
 
                 <input type="hidden" name="accion" value="buscarDisponibles">
-                <input type="hidden" name="cedula" value="${param.cedula}">
 
                 <div class="row g-3">
 
@@ -36,10 +35,7 @@
                         <label class="form-label fw-semibold">Fecha de entrada *</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
-                            <input type="date" id="fechaEntrada" name="fechaEntrada"
-                                   class="form-control"
-                                   value="${fechaEntrada}"
-                                   required>
+                            <input type="date" id="fechaEntrada" name="fechaEntrada" class="form-control" value="${fechaEntrada}" required>
                         </div>
                     </div>
 
@@ -47,10 +43,7 @@
                         <label class="form-label fw-semibold">Fecha de salida *</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
-                            <input type="date" id="fechaSalida" name="fechaSalida"
-                                   class="form-control"
-                                   value="${fechaSalida}"
-                                   required>
+                            <input type="date" id="fechaSalida" name="fechaSalida" class="form-control" value="${fechaSalida}" required>
                         </div>
                     </div>
 
@@ -84,7 +77,7 @@
                             <tr>
                                 <td>${h.numero}</td>
                                 <td>${h.tipo}</td>
-                                <td>$ ${h.precio}</td>
+                                <td>$ ${h.precioPorNoche}</td>
                                 <td>
                                     <form action="${pageContext.request.contextPath}/ReservaController" method="post">
                                         <input type="hidden" name="accion" value="crearReserva">
