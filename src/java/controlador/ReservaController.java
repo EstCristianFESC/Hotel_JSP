@@ -19,7 +19,6 @@ import java.util.List;
 @WebServlet("/ReservaController")
 public class ReservaController extends HttpServlet {
 
-    // === INSTANCIAS DAO (FALTABA ESTA) ===
     private final ClienteDAO clienteDAO = new ClienteDAO();
 
     @Override
@@ -33,13 +32,12 @@ public class ReservaController extends HttpServlet {
 
             case "buscarPorCedula": {
 
-                ClienteDAO clienteDAO = new ClienteDAO(); // <- LO QUE TE FALTABA
-
+                ClienteDAO clienteDAO = new ClienteDAO();
                 String cedula = request.getParameter("cedula");
-                Cliente cli = null;
 
+                Cliente cli = null;
                 if (cedula != null && !cedula.isBlank()) {
-                    cli = clienteDAO.buscarPorId(cedula.trim());    
+                    cli = clienteDAO.buscarPorId(cedula.trim());
                 }
 
                 request.setAttribute("clienteReserva", cli);
@@ -50,24 +48,12 @@ public class ReservaController extends HttpServlet {
                 }
 
                 request.setAttribute("page", "reservas/reservaRegistrar.jsp");
-                request.getRequestDispatcher("/WEB-INF/vistas/layout.jsp")
-                       .forward(request, response);
-
+                request.getRequestDispatcher("/WEB-INF/vistas/layout.jsp").forward(request, response);
                 return;
-                
-            } case "buscarHabitacion": {
+            }
 
-                HabitacionDAO hdao = new HabitacionDAO();
-                List<Habitacion> disponibles = hdao.listarDisponibles();
+            case "buscarDisponibles": {
 
-                request.setAttribute("habitacionesDisponibles", disponibles);
-
-                request.getRequestDispatcher(
-                        "/WEB-INF/vistas/layout.jsp?page=reservas/reservaRegistrar.jsp"
-                ).forward(request, response);
-                break;
-                
-            } case "buscarDisponibles": {
                 String fechaE = request.getParameter("fechaEntrada");
                 String fechaS = request.getParameter("fechaSalida");
 
@@ -84,13 +70,7 @@ public class ReservaController extends HttpServlet {
                 LocalDate salida = LocalDate.parse(fechaS);
 
                 HabitacionDAO hdao = new HabitacionDAO();
-                ReservaDAO rdao = new ReservaDAO();
-
-                List<Habitacion> todas = hdao.listar();
-
-                List<Habitacion> disponibles = todas.stream()
-                        .filter(h -> rdao.habitacionDisponible(h.getNumero(), entrada, salida))
-                        .toList();
+                List<Habitacion> disponibles = hdao.listarDisponibles(entrada, salida);
 
                 request.setAttribute("habitaciones", disponibles);
                 request.setAttribute("fechaEntrada", fechaE);
@@ -98,15 +78,12 @@ public class ReservaController extends HttpServlet {
 
                 request.setAttribute("page", "reservas/reservaRegistrar.jsp");
                 request.getRequestDispatcher("/WEB-INF/vistas/layout.jsp").forward(request, response);
-
                 return;
             }
 
             default: {
-
-                request.getRequestDispatcher(
-                        "/WEB-INF/vistas/layout.jsp?page=reservas/reservaRegistrar.jsp"
-                ).forward(request, response);
+                request.setAttribute("page", "reservas/reservaRegistrar.jsp");
+                request.getRequestDispatcher("/WEB-INF/vistas/layout.jsp").forward(request, response);
             }
         }
     }
@@ -148,11 +125,8 @@ public class ReservaController extends HttpServlet {
 
                     // Validar disponibilidad
                     ReservaDAO rdao = new ReservaDAO();
-
                     boolean disponible = rdao.habitacionDisponible(
-                            hab.getNumero(),
-                            fechaEntrada,
-                            fechaSalida
+                            hab.getNumero(), fechaEntrada, fechaSalida
                     );
 
                     if (!disponible) {
@@ -184,9 +158,8 @@ public class ReservaController extends HttpServlet {
                     request.setAttribute("mensajeError", "Error en el registro: " + e.getMessage());
                 }
 
-                request.getRequestDispatcher(
-                        "/WEB-INF/vistas/layout.jsp?page=reservas/reservaRegistrar.jsp"
-                ).forward(request, response);
+                request.setAttribute("page", "reservas/reservaRegistrar.jsp");
+                request.getRequestDispatcher("/WEB-INF/vistas/layout.jsp").forward(request, response);
 
                 break;
             }

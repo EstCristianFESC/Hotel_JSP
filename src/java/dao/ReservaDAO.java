@@ -11,7 +11,7 @@ import java.util.List;
 public class ReservaDAO {
 
     public boolean insertar(Reserva r) {
-        String sql = "INSERT INTO reservas (cliente_id, habitacion_numero, fecha_entrada, fecha_salida, estado, total) "
+        String sql = "INSERT INTO reserva (cliente_id, habitacion_numero, fecha_entrada, fecha_salida, estado, total) "
                    + "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection con = Conexion.getConexion();
@@ -33,32 +33,32 @@ public class ReservaDAO {
     }
 
     public boolean habitacionDisponible(int numeroHabitacion, LocalDate entrada, LocalDate salida) {
+
         String sql = """
-            SELECT COUNT(*) 
-            FROM reservas
+            SELECT 1
+            FROM reserva
             WHERE habitacion_numero = ?
             AND estado IN ('RESERVADA','ACTIVA')
-            AND (
-                fecha_entrada < ? 
-                AND fecha_salida > ?
-            )
-            """;
+            AND fecha_entrada < ?
+            AND fecha_salida > ?
+            LIMIT 1
+        """;
 
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, numeroHabitacion);
-            ps.setDate(2, Date.valueOf(salida));
-            ps.setDate(3, Date.valueOf(entrada));
+            ps.setDate(2, Date.valueOf(salida));   // límite superior
+            ps.setDate(3, Date.valueOf(entrada));  // límite inferior
 
             ResultSet rs = ps.executeQuery();
-            rs.next();
 
-            return rs.getInt(1) == 0;
+            // Si devuelve AL MENOS una fila → hay choque → no está disponible
+            return !rs.next();
 
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return false; // por seguridad, si falla → mejor no listarlo
         }
     }
 
@@ -67,8 +67,44 @@ public class ReservaDAO {
         if (noches <= 0) noches = 1;
         return precio * noches;
     }
+    
+    public List<Reserva> buscarReservasPorRango(LocalDate entrada, LocalDate salida) {
+        List<Reserva> lista = new ArrayList<>();
 
-    List<Reserva> buscarReservasPorRango(LocalDate entrada, LocalDate salida) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String sql = """
+            SELECT * 
+            FROM reserva
+            WHERE estado IN ('RESERVADA','ACTIVA')
+            AND (
+                fecha_entrada < ? 
+                AND fecha_salida > ?
+            )
+        """;
+
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setDate(1, java.sql.Date.valueOf(salida));
+            ps.setDate(2, java.sql.Date.valueOf(entrada));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Reserva r = new Reserva();
+                    r.setId(rs.getInt("id"));
+                    r.setClienteId(rs.getInt("cliente_id"));
+                    r.setHabitacionNumero(rs.getInt("habitacion_numero"));
+                    r.setFechaEntrada(rs.getDate("fecha_entrada").toLocalDate());
+                    r.setFechaSalida(rs.getDate("fecha_salida").toLocalDate());
+                    r.setEstado(rs.getString("estado"));
+                    r.setTotal(rs.getDouble("total"));
+                    lista.add(r);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lista;
     }
 }
