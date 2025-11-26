@@ -43,7 +43,7 @@
                         <i class="bi bi-calendar-check fs-4"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0">--</h3>
+                <h3 class="fw-bold mb-0"><%= request.getAttribute("reservasHoy") %></h3>
                 <p class="text-muted small">Llegadas esperadas</p>
             </div>
         </div>
@@ -57,7 +57,7 @@
                         <i class="bi bi-box-arrow-right fs-4"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0">--</h3>
+                <h3 class="fw-bold mb-0"><%= request.getAttribute("checkoutsPendientes") %></h3>
                 <p class="text-muted small">Salidas de hoy</p>
             </div>
         </div>
@@ -71,7 +71,7 @@
                         <i class="bi bi-cash-coin fs-4"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0">$ --</h3>
+                <h3 class="fw-bold mb-0">$ <%= request.getAttribute("ingresosDia") %></h3>
                 <p class="text-muted small">Total facturado hoy</p>
             </div>
         </div>
@@ -85,7 +85,7 @@
                         <i class="bi bi-people-fill fs-4"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0">--</h3>
+                <h3 class="fw-bold mb-0"><%= request.getAttribute("huespedesActuales") %></h3>
                 <p class="text-muted small">Personas alojadas</p>
             </div>
         </div>

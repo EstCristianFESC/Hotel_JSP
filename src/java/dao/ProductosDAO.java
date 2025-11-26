@@ -31,6 +31,8 @@ public class ProductosDAO {
             }
         } catch (Exception e) {
             System.out.println("Error listar productos: " + e);
+        } finally {
+            closeResources();
         }
         return lista;
     }
@@ -55,6 +57,8 @@ public class ProductosDAO {
             }
         } catch (Exception e) {
             System.out.println("Error buscar producto: " + e);
+        } finally {
+            closeResources();
         }
         return p;
     }
@@ -71,6 +75,8 @@ public class ProductosDAO {
             return true;
         } catch (Exception e) {
             System.out.println("Error agregar producto: " + e);
+        } finally {
+            closeResources();
         }
         return false;
     }
@@ -88,6 +94,8 @@ public class ProductosDAO {
             return true;
         } catch (Exception e) {
             System.out.println("Error actualizar: " + e);
+        } finally {
+            closeResources();
         }
         return false;
     }
@@ -103,10 +111,12 @@ public class ProductosDAO {
             return true;
         } catch (Exception e) {
             System.out.println("Error eliminar: " + e);
+        } finally {
+            closeResources();
         }
         return false;
     }
-    
+
     public List<Productos> filtrar(String idStr, String descripcion) {
         List<Productos> lista = new ArrayList<>();
 
@@ -135,8 +145,48 @@ public class ProductosDAO {
 
         } catch (Exception e) {
             System.out.println("Error filtrar productos: " + e);
+        } finally {
+            closeResources();
         }
 
         return lista;
+    }
+
+    // ---------- método corregido listarActivos ----------
+    public List<Productos> listarActivos() {
+        List<Productos> lista = new ArrayList<>();
+        String sql = "SELECT id, descripcion, valor_unitario, estado FROM restaurante_producto WHERE estado = 1";
+
+        try (Connection c = Conexion.getConexion();
+             PreparedStatement pst = c.prepareStatement(sql);
+             ResultSet rsLocal = pst.executeQuery()) {
+
+            while (rsLocal.next()) {
+                Productos p = new Productos();
+                p.setId(rsLocal.getInt("id"));
+                p.setDescripcion(rsLocal.getString("descripcion"));
+                p.setValorUnitario(rsLocal.getLong("valor_unitario"));
+                p.setEstado(rsLocal.getInt("estado"));
+                lista.add(p);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
+
+    // util para cerrar recursos en métodos que no usan try-with-resources
+    private void closeResources() {
+        try {
+            if (rs != null) rs.close();
+        } catch (Exception ignore) {}
+        try {
+            if (ps != null) ps.close();
+        } catch (Exception ignore) {}
+        try {
+            if (con != null) con.close();
+        } catch (Exception ignore) {}
     }
 }

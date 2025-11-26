@@ -222,4 +222,20 @@ public class HabitacionDAO {
 
         return h;
     }
+    
+    public boolean actualizarDisponibilidad(int numeroHabitacion, boolean disponible) {
+        String sql = "UPDATE habitacion SET disponible = ? WHERE numero = ?";
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setBoolean(1, disponible);
+            ps.setInt(2, numeroHabitacion);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

@@ -1,12 +1,20 @@
 package controlador;
 
+import dao.CheckinDAO;
 import dao.HabitacionDAO;
+import dao.ReservaDAO;
 import dao.UsuarioDAO;
 import modelo.Usuario;
 import java.io.IOException;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import modelo.Checkin;
+import modelo.Habitacion;
+import modelo.Reserva;
 
 @WebServlet("/LoginController")
 public class LoginController extends HttpServlet {
@@ -79,21 +87,39 @@ public class LoginController extends HttpServlet {
     }
 
     private void cargarMetricasInicio(HttpServletRequest request) {
-
         HabitacionDAO hdao = new HabitacionDAO();
+        ReservaDAO rdao = new ReservaDAO();
+        CheckinDAO cdao = new CheckinDAO();
 
+        LocalDate hoy = LocalDate.now();
+
+        // --- Métricas de habitaciones ---
         var habitaciones = hdao.listar();
+        int totalHabitaciones = habitaciones.size();
+        int disponibles = (int) habitaciones.stream().filter(Habitacion::isDisponible).count();
+        int ocupadas = totalHabitaciones - disponibles;
+        int ocupacionActual = totalHabitaciones > 0 ? (ocupadas * 100 / totalHabitaciones) : 0;
 
-        int total = habitaciones.size();
-        int disponibles = (int) habitaciones.stream()
-                                            .filter(h -> h.isDisponible())
-                                            .count();
-        int ocupadas = total - disponibles;
-
-        int ocupacion = total > 0 ? (ocupadas * 100 / total) : 0;
-
-        request.setAttribute("totalHabitaciones", total);
+        request.setAttribute("totalHabitaciones", totalHabitaciones);
         request.setAttribute("habitacionesDisponibles", disponibles);
-        request.setAttribute("ocupacionActual", ocupacion);
+        request.setAttribute("ocupacionActual", ocupacionActual);
+
+        // --- Reservas para hoy (solo activas) ---
+        List<Reserva> reservasHoy = rdao.listarPorFechaEntradaYEstado(hoy, Arrays.asList("RESERVADA", "ACTIVA"));
+        int llegadasEsperadas = reservasHoy.size();
+        request.setAttribute("reservasHoy", llegadasEsperadas);
+
+        // --- Check-outs pendientes hoy ---
+        List<Checkin> checkoutsHoy = cdao.listarCheckoutsPorFecha(hoy);
+        request.setAttribute("checkoutsHoy", checkoutsHoy.size());
+
+        // --- Ingresos del día (sumando total de reservas o checkins que finalizan hoy) ---
+        long ingresosHoy = checkoutsHoy.stream().mapToLong(Checkin::getTotalFinal).sum();
+        request.setAttribute("ingresosHoy", ingresosHoy);
+
+        // --- Huéspedes actualmente alojados ---
+        List<Checkin> checkinsActivos = cdao.listarCheckinsActivos();
+        int huespedesActuales = checkinsActivos.stream().mapToInt(Checkin::getCantidadPersonas).sum();
+        request.setAttribute("huespedesActuales", huespedesActuales);
     }
 }

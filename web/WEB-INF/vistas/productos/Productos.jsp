@@ -28,11 +28,21 @@
                   method="get" class="row g-3 mb-4 align-items-end">
 
                 <!-- Campo de búsqueda -->
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <label class="form-label fw-semibold">Descripción:</label>
                     <input type="text" class="form-control" name="descripcion"
-                           value="<%= request.getParameter("descripcion") != null ? request.getParameter("descripcion") : "" %>"
+                           value="<%= request.getParameter("descripcion") == null ? "" : request.getParameter("descripcion") %>"
                            placeholder="Ej: Gaseosa, Hamburguesa">
+                </div>
+
+                <!-- Filtro Estado -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Estado:</label>
+                    <select name="estado" class="form-select">
+                        <option value="">-- Todos --</option>
+                        <option value="1" <%= "1".equals(String.valueOf(request.getParameter("estado"))) ? "selected" : "" %>>Activo</option>
+                        <option value="0" <%= "0".equals(request.getParameter("estado")) ? "selected" : "" %>>Inactivo</option>
+                    </select>
                 </div>
 
                 <!-- Botón Agregar -->
@@ -69,6 +79,7 @@
                         <tr>
                             <th>Descripción</th>
                             <th>Valor Unitario</th>
+                            <th>Estado</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -90,6 +101,7 @@
                         <tr>
                             <td><%= p.getDescripcion() %></td>
                             <td>$ <%= valorFormateado %></td>
+                            <td><%= (p.getEstado() == 1) ? "Activo" : "Inactivo" %></td>
                             <td class="text-center">
                                 <a href="${pageContext.request.contextPath}/ProductosController?accion=editar&id=<%= p.getId() %>"
                                    class="btn btn-sm btn-warning">
@@ -120,6 +132,7 @@
     function limpiarFiltros() {
         // limpiar campos
         document.querySelector("input[name=descripcion]").value = "";
+        document.querySelector("select[name=estado]").value = "";
 
         // ocultar toast
         const toastEl = document.getElementById("mensajeProducto");
