@@ -155,23 +155,42 @@ public class HabitacionDAO {
 
     public List<Habitacion> listarDisponibles(LocalDate entrada, LocalDate salida) {
         List<Habitacion> disponibles = new ArrayList<>();
-        List<Habitacion> todas = listar(); // traigo todas las habitaciones
-        ReservaDAO rdao = new ReservaDAO();
 
-        // Traer reservas que chocan con las fechas seleccionadas
-        List<Reserva> ocupadas = rdao.buscarReservasPorRango(entrada, salida);
+        // Consulta SQL para obtener habitaciones disponibles en el rango de fechas
+        String sql = """
+            SELECT h.numero, h.tipo, h.descripcion, h.precioPorNoche, h.disponible
+            FROM habitacion h
+            WHERE h.disponible = 1
+            AND h.numero NOT IN (
+                SELECT r.habitacion_numero
+                FROM reserva r
+                WHERE r.estado IN ('RESERVADA', 'ACTIVA')
+                AND r.fecha_entrada < ?
+                AND r.fecha_salida > ?
+            )
+        """;
 
-        // Crear lista de números de habitaciones ocupadas
-        List<Integer> numerosOcupados = new ArrayList<>();
-        for (Reserva r : ocupadas) {
-            numerosOcupados.add(r.getHabitacionNumero());
-        }
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-        // Filtrar habitaciones libres
-        for (Habitacion h : todas) {
-            if (!numerosOcupados.contains(h.getNumero())) {
+            // Establecer los parámetros de fecha en la consulta SQL
+            ps.setDate(1, Date.valueOf(salida));  // Fecha de salida
+            ps.setDate(2, Date.valueOf(entrada)); // Fecha de entrada
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Habitacion h = new Habitacion();
+                h.setNumero(rs.getInt("numero"));
+                h.setTipo(rs.getString("tipo"));
+                h.setDescripcion(rs.getString("descripcion"));
+                h.setPrecioPorNoche(rs.getDouble("precioPorNoche"));
+                h.setDisponible(rs.getBoolean("disponible"));
                 disponibles.add(h);
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return disponibles;
